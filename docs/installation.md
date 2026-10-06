@@ -4,7 +4,7 @@ Reconstructs the whole orchestration stack on a Windows machine: **Hermes as Lea
 driving three CLI coding agents (**Devin = hard · Cline = medium · OpenCode = light**) with a live
 guard hook and a self-tested script kit.
 
-Verified end-to-end on the machine this kit was born on (2026-10-06): every command below was
+Verified end-to-end on the machine this kit was born on (2026-10-06; re-verified 2026-10-07 after CLI upgrades): every command below was
 executed, and the "expected" values are real observed output — a fresh install can be validated
 line by line against this document.
 
@@ -66,7 +66,7 @@ cline -P opencode-go -m longcat-2.5-preview-free "say CLINE_SMOKE_OK"    # expec
 
 ```bash
 npm install -g opencode-ai
-opencode --version       # expected: 1.18.34
+opencode --version       # expected: 1.18.35  (verified 2026-10-07)
 ```
 
 Auth (OpenCode Zen credential → `%USERPROFILE%\.local\share\opencode\auth.json`):
@@ -118,13 +118,13 @@ This lands the CLI under `%LOCALAPPDATA%\devin\cli\` (self-updates with `devin u
 Verify + authenticate:
 
 ```bash
-devin --version          # expected: devin 3000.10.21 (611c1cba)  (verified 2026-10-06)
+devin --version          # expected: devin 3000.11.3 (9c803229faa4)  (verified 2026-10-07)
 devin auth login         # or the interactive wizard: devin setup
 devin auth status
-devin doctor             # expected: 1 check(s): 1 passed, 0 warning(s), 0 failure(s)
+devin doctor             # expected: 2 check(s): 2 passed, 0 warning(s), 0 failure(s)
 ```
 
-Non-interactive launch (flags verified on v3000.10.21):
+Non-interactive launch (flags verified on v3000.11.3):
 
 ```bash
 devin --respect-workspace-trust false --permission-mode dangerous -p -- "<prompt>"
@@ -188,6 +188,19 @@ work — it fails open.
    bash scripts/agent-hooks/test-guard.sh   # expect: 16 pass, 0 fail   (verified 2026-10-06)
    ```
 
+### 3.3 Superpowers plugin (optional — quality methodology)
+
+Methodology skill pack for Hermes sessions (github.com/obra/superpowers; installed 2026-10-07):
+
+```bash
+hermes plugins install obra/superpowers --enable --yes-deps    # community source -> scan CAUTION; add --force after reviewing the findings
+hermes plugins doctor superpowers                              # expect: import + registration passed · 1 hook
+```
+
+- Skills load namespaced (`superpowers:*`); the bootstrap injects on the FIRST turn of each new session (no post-compaction hook — start a fresh session if skills stop triggering).
+- Restart the gateway / desktop app for already-running processes to pick it up.
+- Optional telemetry opt-out: `SUPERPOWERS_DISABLE_TELEMETRY=1`.
+
 ## 4. Kit — install & self-test
 
 ```bash
@@ -235,10 +248,10 @@ the composed command. Operational rules learned live (details: `docs/agent-matri
 
 | # | Check | Command | Expected (verified 2026-10-06) |
 |---|---|---|---|
-| 1 | CLIs present | `cline --version && opencode --version && devin --version` | 3.0.68 · 1.18.34 · devin 3000.10.21 |
+| 1 | CLIs present | `cline --version && opencode --version && devin --version` | 3.0.68 · 1.18.35 · devin 3000.11.3 |
 | 2 | Cline smoke | `cline -P opencode-go -m longcat-2.5-preview-free "say CLINE_SMOKE_OK"` | `CLINE_SMOKE_OK` |
 | 3 | OpenCode smoke | `opencode run --model opencode/muse-spark-1.3-contributor-free --title smoke "say OPENCODE_SMOKE_OK"` | `OPENCODE_SMOKE_OK` |
-| 4 | Devin health | `devin doctor` | 1 passed, 0 failures |
+| 4 | Devin health | `devin doctor` | 2 passed, 0 failures (v3000.11.3) |
 | 5 | Hook registered | `hermes hooks doctor` | all checks green |
 | 6 | Hook behavior | `bash scripts/agent-hooks/test-guard.sh` | 16 pass / 0 fail |
 | 7 | Kit scripts | `bash scripts/smoke-test.sh` | 42 passed / 0 failed |
@@ -256,15 +269,18 @@ the composed command. Operational rules learned live (details: `docs/agent-matri
 | Ghost diffs / "Committer identity unknown" in worktrees | Missing repo-local identity / CRLF | Pin repo-local `user.name`, `user.email`, `core.autocrlf false` |
 | Scope diff shows phantom noise once main moved | Two-dot diff | Use three-dot: `git diff main...HEAD` |
 | Cline 429 / "Model is unavailable" | Free-tier throttle / catalog drift | Stagger runs, respect cooldowns; re-check the live catalog; `longcat-2.5-preview-free` is the stable free pick |
+| `npm i -g <pkg>` fails with EPERM under `...\hermes\tools\node-*` | Bundled npm's default global prefix points into the Hermes tools dir | Install with an explicit prefix: `npm i -g <pkg> --prefix "$APPDATA/npm"` (same dir as the existing CLI shims), then re-check `<cli> --version` |
+| Devin update fails: `devin.exe` "being used by another process" | A running devin CLI session holds the exe | Wait for devin sessions to exit, re-run `irm https://cli.devin.ai/install.ps1 \| iex`, verify `devin --version` |
 
-## 9. Machine inventory (verified 2026-10-06)
+## 9. Machine inventory (verified 2026-10-06; re-verified 2026-10-07)
 
 | Item | Value |
 |---|---|
 | cline | 3.0.68 (npm global, `%APPDATA%\npm\cline`) |
-| opencode | 1.18.34 (npm global, `opencode-ai`) |
-| devin | 3000.10.21 `611c1cba` (`%LOCALAPPDATA%\devin\cli\bin\devin.exe`) |
+| opencode | 1.18.35 (npm global, `opencode-ai`; upgrade with `--prefix "$APPDATA/npm"`) |
+| devin | 3000.11.3 `9c803229faa4` (`%LOCALAPPDATA%\devin\cli\bin\devin.exe`) |
 | node / npm | v26.7.0 / 11.19.0 (Node bundled with Hermes) |
 | kit smoke test | 42 passed / 0 failed |
 | guard hook | kit mirror **identical** to live; 16/16 synthetic tests; allowlisted 2026-10-06, unchanged since |
 | `hermes hooks doctor` | healthy — exists · allowlisted · unchanged · runs clean |
+| superpowers plugin | 6.4.2 (`hermes plugins`; skills namespaced `superpowers:*`; up to date) |

@@ -1,7 +1,7 @@
 {
   "meta": {
     "project": "hermes-orchestrator",
-    "updated": "2026-10-06",
+    "updated": "2026-10-07",
     "milestone": "M1 — published: public GitHub remote + full installation guide",
     "worktrees_root": "E:/hermes-orchestrator-worktrees",
     "prompts_root": "E:/hermes-orchestrator-worktrees/_prompts",
@@ -54,6 +54,23 @@
       "verify": ["bash scripts/smoke-test.sh", "bash scripts/agent-hooks/test-guard.sh", "bash scripts/launch-agent.sh <agent> <workdir> <prompt> --dry-run", "hermes hooks doctor", "python scripts/doc-stats.py ."],
       "fail_count": 0,
       "notes": "Every version/flag/expected value re-verified live before documenting (cline 3.0.68 · opencode 1.18.34 · devin 3000.10.21; dry-runs for all three agents; hook mirror diff identical to live)."
+    },
+    {
+      "id": "T-106",
+      "title": "Upgrade lane: CLI updates (opencode 1.18.35 · devin 3000.11.3) + Superpowers plugin + §9 re-verify + docs sync",
+      "status": "done",
+      "agent": "hermes",
+      "scope": ["docs/installation.md", ".orchestrator/**"],
+      "deliverables": [
+        "opencode 1.18.34 -> 1.18.35 (npm install with --prefix %APPDATA%/npm after EPERM on the Hermes tools prefix)",
+        "devin 3000.10.21 -> 3000.11.3 (updater re-run once the devin session released the exe lock)",
+        "Superpowers plugin 6.4.2 installed + enabled (skills superpowers:*; fresh-session bootstrap verified)",
+        "docs/installation.md synced: version rows, npm --prefix + devin exe-lock troubleshooting, section 3.3 Superpowers"
+      ],
+      "acceptance": ["§9 re-verify green after upgrades", "expected values in docs match installed CLIs", "kit smoke green"],
+      "verify": ["bash scripts/smoke-test.sh", "bash scripts/agent-hooks/test-guard.sh", "bash scripts/launch-agent.sh <agent> <workdir> <prompt> --dry-run", "opencode run ... say OPENCODE_SMOKE_OK", "devin ... reply exactly DEVIN_SMOKE_OK", "devin doctor", "hermes plugins doctor superpowers", "python scripts/doc-stats.py ."],
+      "fail_count": 0,
+      "notes": "Executed 2026-10-07 on Sếp's go (A+B+C). Superpowers install needed --force over the community-source CAUTION scan (findings were docs/tests noise; plugin code reviewed before override). Deviations: devin update deferred until the R11 devin session exited, then ran clean; opencode npm postinstall skipped by the allow-scripts policy (harmless — binary + smoke verified). Evidence in VERIFICATION.md."
     }
   ],
   "backlog": [
