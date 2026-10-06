@@ -31,6 +31,20 @@ merge / DONE
 - Hermes merges only after full verification; remove the worktree when done
   (`git worktree remove <path>`; prune occasionally).
 - Keep `third_party/` checkouts and large binaries out of commits.
+- **Pin repo-local git config** in the main repo: `user.name`, `user.email`, `core.autocrlf false`.
+  Worktree commits/merges run from different tool sessions and otherwise fail with "Committer
+  identity unknown" or produce CRLF ghost-diffs.
+- **Scope/diff checks are THREE-dot** (`git diff main...HEAD`) — two-dot shows phantom noise once
+  main moves ahead. Spell the three-dot rule out in prompts whose agent does its own diff checks.
+- **Bookkeeping is a separate commit**: control-plane updates (TASKS.json · VERIFICATION.md ·
+  PROJECT_STATE) go in one `orchestrator: <task> verified + merged (bookkeeping)` commit right
+  after the merge.
+- **If a run dies pre-commit but the work is complete** (provider stream errors): Hermes completes
+  the commit on the task branch with the prompt's message and logs the provenance — completed work
+  is never lost to a dead CLI process.
+- **Pause/resume**: on a user pause, kill agent + child processes, verify quiet, write
+  `_prompts/T-xxx-resume.md` (state · paths · continuation steps); resume = re-dispatch with a
+  continuation prompt pointing at that note.
 
 ## Commands
 
@@ -45,8 +59,11 @@ $EDITOR E:/my-project-worktrees/_prompts/T-101.md
 bash scripts/launch-agent.sh cline E:/my-project-worktrees/T-101 E:/my-project-worktrees/_prompts/T-101.md --title T-101
 
 # 4) verify + merge (Hermes)
-cd E:/my-project-worktrees/T-101 && git status && git diff
+cd E:/my-project-worktrees/T-101 && git status && git diff main...HEAD
 cd E:/my-project && git merge --no-ff task/T-101-short-slug -m "merge: T-101 <title> (verified)"
+
+# 5) bookkeeping (same session)
+cd E:/my-project && git add .orchestrator && git commit -m "orchestrator: T-101 verified + merged (bookkeeping)"
 ```
 
 Note (this machine, MSYS/git-bash): bash `cd /e/...` works, but paths passed as ARGUMENTS to

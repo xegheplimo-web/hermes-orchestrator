@@ -36,6 +36,12 @@ If any item FAILS → STATUS = NOT DONE → Fix → Verify → Integrate → Fin
 - Re-run gates YOURSELF (orchestrator); "the agent ran its own tests" is not evidence.
 - Spot-check agent claims against the actual source (line numbers, symbols, hashes).
 - For retries: confirm the final artifact's mtime/content belongs to the LATEST run.
+- **A dead run is not a failed task**: on provider stream errors / mid-run deaths, inspect the
+  worktree before declaring failure — if the deliverable + evidence are complete and the gate
+  re-run is green, the orchestrator completes the commit and logs the provenance
+  (see `agent-matrix.md` → Field lessons).
+- **Scope check is THREE-dot** (`git diff main...HEAD`) — two-dot shows phantom noise once main
+  moves ahead.
 
 ## Diff hygiene (before DONE)
 
