@@ -1,0 +1,18 @@
+# DECISIONS
+
+One entry per binding decision. Newest at the bottom. Frozen interfaces/names change only via a new entry.
+
+## D-001 (2026-10-06) — Kit created
+
+- New repo `E:\hermes-orchestrator` materializes Sếp's canonical Lead Orchestrator brief into a
+  reusable kit: canonical prompt + templates + control-plane scaffold + launch scripts.
+
+## D-002 (2026-10-06) — PROMPT.md is canonical
+
+- `PROMPT.md` reproduces the brief verbatim (formatting cleaned only). It is the system/project
+  orchestrator prompt for any project run with this kit; changes go through this file.
+
+## D-003 (2026-10-06) — Git ownership
+
+- Agents write files; **Hermes owns git** (commit / merge / push). One task = one worktree =
+  one branch (`task/<id>-<slug>`) created by `scripts/new-task-worktree.sh`.

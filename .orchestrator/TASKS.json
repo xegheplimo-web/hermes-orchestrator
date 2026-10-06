@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "project": "hermes-orchestrator",
+    "updated": "2026-10-06",
+    "milestone": "M0 — kit bootstrap",
+    "worktrees_root": "E:/hermes-orchestrator-worktrees",
+    "prompts_root": "E:/hermes-orchestrator-worktrees/_prompts",
+    "status_legend": ["queued", "dispatched", "in_progress", "verifying", "done", "blocked", "failed"]
+  },
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Kit bootstrap (prompt, templates, scripts, self-test)",
+      "status": "done",
+      "agent": "hermes",
+      "scope": ["PROMPT.md", "README.md", "AGENTS.md", "docs/**", "templates/**", "scripts/**", ".orchestrator/**", ".gitignore", ".gitattributes"],
+      "deliverables": [
+        "PROMPT.md (canonical orchestrator prompt)",
+        "docs/agent-matrix.md + docs/gates.md + docs/git-orchestration.md",
+        "templates/task-card.md + templates/decision-plan.md + templates/final-report.md + templates/control-plane/*",
+        "scripts/bootstrap-project.sh + scripts/new-task-worktree.sh + scripts/launch-agent.sh + scripts/smoke-test.sh"
+      ],
+      "acceptance": ["smoke test green", "initial commit on main"],
+      "verify": ["bash scripts/smoke-test.sh", "git log --oneline -1"],
+      "fail_count": 0,
+      "notes": "Created 2026-10-06 from Sếp's canonical Lead Orchestrator brief; verified by running scripts/smoke-test.sh (evidence recorded in VERIFICATION.md)."
+    }
+  ],
+  "backlog": [
+    {"id": "T-101", "title": "status renderer: TASKS.json -> compact board (python, stdout only)", "suggested_agent": "opencode"},
+    {"id": "T-102", "title": "secret-scan pre-commit hook", "suggested_agent": "opencode"},
+    {"id": "T-103", "title": "CI workflow: shellcheck + smoke-test on push", "suggested_agent": "cline"},
+    {"id": "T-104", "title": "GitHub remote setup + push discipline", "suggested_agent": "hermes"}
+  ]
+}

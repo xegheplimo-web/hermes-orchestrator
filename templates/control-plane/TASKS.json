@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "project": "{{PROJECT_NAME}}",
+    "updated": "{{DATE}}",
+    "milestone": "M0",
+    "worktrees_root": "{{WORKTREES_ROOT}}",
+    "prompts_root": "{{PROMPTS_ROOT}}",
+    "status_legend": ["queued", "dispatched", "in_progress", "verifying", "done", "blocked", "failed"]
+  },
+  "tasks": [],
+  "backlog": []
+}

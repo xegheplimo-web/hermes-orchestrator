@@ -1,0 +1,9 @@
+# Agent run artifacts
+agent_logs/
+.serena/
+_sandbox/
+*.log
+
+# Python
+__pycache__/
+*.pyc
