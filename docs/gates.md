@@ -35,6 +35,7 @@ If any item FAILS → STATUS = NOT DONE → Fix → Verify → Integrate → Fin
 
 - Re-run gates YOURSELF (orchestrator); "the agent ran its own tests" is not evidence.
 - Spot-check agent claims against the actual source (line numbers, symbols, hashes).
+- **Doc waves**: run `scripts/verify-doc-refs.py <doc> --root <tree> …` — every cited path must exist under a root, every backticked `--flag`/env token must grep-hit the source tree (exit 1 on missing; `--skip <regex>` silences illustrative names).
 - For retries: confirm the final artifact's mtime/content belongs to the LATEST run.
 - **A dead run is not a failed task**: on provider stream errors / mid-run deaths, inspect the
   worktree before declaring failure — if the deliverable + evidence are complete and the gate
