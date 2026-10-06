@@ -2,7 +2,7 @@
   "meta": {
     "project": "hermes-orchestrator",
     "updated": "2026-10-06",
-    "milestone": "M0 — kit bootstrap",
+    "milestone": "M1 — published: public GitHub remote + full installation guide",
     "worktrees_root": "E:/hermes-orchestrator-worktrees",
     "prompts_root": "E:/hermes-orchestrator-worktrees/_prompts",
     "status_legend": ["queued", "dispatched", "in_progress", "verifying", "done", "blocked", "failed"]
@@ -24,12 +24,41 @@
       "verify": ["bash scripts/smoke-test.sh", "git log --oneline -1"],
       "fail_count": 0,
       "notes": "Created 2026-10-06 from Sếp's canonical Lead Orchestrator brief; verified by running scripts/smoke-test.sh (evidence recorded in VERIFICATION.md)."
+    },
+    {
+      "id": "T-104",
+      "title": "GitHub remote setup + push discipline",
+      "status": "done",
+      "agent": "hermes",
+      "scope": [".git remote", ".orchestrator/**"],
+      "deliverables": [
+        "public repo https://github.com/xegheplimo-web/hermes-orchestrator",
+        "origin remote + main tracking; first push verified via git ls-remote"
+      ],
+      "acceptance": ["gh repo view resolves as PUBLIC", "git ls-remote origin HEAD == local main"],
+      "verify": ["git ls-remote origin", "gh repo view xegheplimo-web/hermes-orchestrator"],
+      "fail_count": 0,
+      "notes": "D-004. Hermes owns git; agents never push. Repo-local core.autocrlf pinned false; secrets scan run before the first push (clean)."
+    },
+    {
+      "id": "T-105",
+      "title": "docs/installation.md — full verified installation guide + README install section",
+      "status": "done",
+      "agent": "hermes",
+      "scope": ["docs/installation.md", "README.md"],
+      "deliverables": [
+        "docs/installation.md: component map · prerequisites · agent CLIs · provider auth · skill + guard hook · kit self-test · first-project quickstart · launch conventions · verification checklist · troubleshooting · machine inventory",
+        "README.md: repo link + layout row + Install short path"
+      ],
+      "acceptance": ["kit smoke green after the change", "launch dry-runs match installed CLIs", "guard tests 16/16", "hooks doctor healthy"],
+      "verify": ["bash scripts/smoke-test.sh", "bash scripts/agent-hooks/test-guard.sh", "bash scripts/launch-agent.sh <agent> <workdir> <prompt> --dry-run", "hermes hooks doctor", "python scripts/doc-stats.py ."],
+      "fail_count": 0,
+      "notes": "Every version/flag/expected value re-verified live before documenting (cline 3.0.68 · opencode 1.18.34 · devin 3000.10.21; dry-runs for all three agents; hook mirror diff identical to live)."
     }
   ],
   "backlog": [
     {"id": "T-101", "title": "status renderer: TASKS.json -> compact board (python, stdout only)", "suggested_agent": "opencode"},
     {"id": "T-102", "title": "secret-scan pre-commit hook", "suggested_agent": "opencode"},
-    {"id": "T-103", "title": "CI workflow: shellcheck + smoke-test on push", "suggested_agent": "cline"},
-    {"id": "T-104", "title": "GitHub remote setup + push discipline", "suggested_agent": "hermes"}
+    {"id": "T-103", "title": "CI workflow: shellcheck + smoke-test on push", "suggested_agent": "cline"}
   ]
 }
