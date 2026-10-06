@@ -1,0 +1,14 @@
+{
+  "_comment": "Agent result contract (governance v3). Every task writes agent_logs/<task>_result.json next to its log. Hermes re-runs the VERIFY commands regardless — this is for the ledger, not trust.",
+  "status": "completed | failed | blocked",
+  "task": "T-000",
+  "agent": "cline | opencode | devin",
+  "files_changed": ["path/one.py", "path/two.md"],
+  "tests_run": [
+    { "cmd": "pytest -q tests/", "result": "pass | fail", "output_tail": "..." }
+  ],
+  "tests_passed": true,
+  "issues": [],
+  "blocker": null,
+  "summary": "One short paragraph: what was done, how verified, known limitations."
+}

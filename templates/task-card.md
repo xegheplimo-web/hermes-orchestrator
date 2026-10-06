@@ -52,6 +52,7 @@ Final report must contain:
 - test results (real output)
 - known limitations
 - unresolved issues
+- `agent_logs/{{TASK_ID}}_result.json` — machine-readable contract (schema: kit `templates/result.json`, governance v3)
 
 ## Constraints
 

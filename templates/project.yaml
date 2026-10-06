@@ -1,0 +1,52 @@
+# project.yaml — machine-readable project profile (governance v3, 2026-10-06)
+# Round 0 (SCAN) fills this; copy to <project>/.hermes/project.yaml or merge into .orchestrator/.
+# Everything a fresh session needs to run the quality gates without re-discovery.
+project:
+  name: my-project
+  stack: []              # e.g. [python, fastapi, postgres]
+  package_manager: ""    # e.g. uv | pnpm | npm
+  lockfile: ""           # e.g. uv.lock | pnpm-lock.yaml
+
+commands:
+  install: ""            # e.g. uv sync --frozen
+  format: ""             # e.g. ruff format --check .
+  lint: ""               # e.g. ruff check .
+  typecheck: ""          # e.g. pyright
+  test: ""               # e.g. pytest -q
+  build: ""              # e.g. uv build
+  security: ""           # e.g. bandit -ll -r src
+
+quality:
+  require_format: true
+  require_lint: true
+  require_typecheck: true
+  require_tests: true
+  require_build: true
+  require_security: false
+
+routing:
+  hard:   { agent: devin }     # architecture, core, hard bugs, refactor
+  medium: { agent: cline }     # features, API/UI, modules, integration
+  light:  { agent: opencode }  # boilerplate, tests, docs, lint
+
+repair:
+  same_agent_max_attempts: 2
+  escalation: true             # fail #2 -> stronger agent + RESCUE BRIEF
+  micro_fail_fix_inline: true  # trivial (<5') -> orchestrator fixes directly
+
+integration:
+  isolated_worktrees: true
+  merge_one_by_one: true
+  affected_tests_after_merge: true
+  full_verify_after_merge: true
+  rollback_last_merge_on_regression: true
+
+budget:
+  max_wall_minutes_per_task: 40
+  stop_rule: "no artifact write in ~15 min -> kill by path (counts as fail #1)"
+
+permissions:
+  # tiers enforced by verify gates + the guard hook (see docs/governance.md)
+  auto: [read, search, branch, worktree, project-file-edit, run-tests, project-local-deps, call-agents]
+  gated: [global-install, system-pkg-manager, new-mcp, new-plugin, secrets, prod-deploy, protected-branch-push, ci-cd, hermes-config]
+  blocked_during_run: [live-core-self-modification, disable-tests-or-security, delete-main-repo, force-push, db-drop, untrusted-install]

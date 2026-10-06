@@ -16,14 +16,18 @@ the Hermes skill `lead-orchestrator`.
 | `docs/agent-matrix.md` | Machine roster: exact CLIs/models, routing rules, escalation, per-agent pitfalls. |
 | `docs/gates.md` | Build gates + DONE definition + per-stack command sets + diff hygiene. |
 | `docs/git-orchestration.md` | Worktree-per-task flow; who may touch git; merge discipline. |
+| `docs/governance.md` | Governance v3: permission tiers (AUTO/GATED/BLOCKED), maintenance lane, audit cadence, result contract, live guard hook. |
 | `templates/task-card.md` | Mandatory task format (prompt §7). |
 | `templates/decision-plan.md` | Pre-execution plan format (§28). |
 | `templates/final-report.md` | Final report format (§30). |
+| `templates/project.yaml` | Machine-readable project profile — Round-0 SCAN artifact (governance v3). |
+| `templates/result.json` | Agent result contract, written per task (governance v3). |
 | `templates/control-plane/` | Starter `.orchestrator/` files for a new project (`{{PROJECT_NAME}}`, `{{DATE}}`). |
 | `scripts/bootstrap-project.sh` | Scaffold a new orchestrated project (control plane + agent work dirs + .gitignore). |
 | `scripts/new-task-worktree.sh` | Create `task/<id>-<slug>` worktree for a task. |
 | `scripts/launch-agent.sh` | Launch cline/opencode/devin on a prompt file: timeout + log + exit marker (`--dry-run`). |
 | `scripts/smoke-test.sh` | Self-test for all scripts (throwaway project in a temp dir). |
+| `scripts/agent-hooks/` | Guard hook `block-dangerous.sh` + 16 synthetic tests — mirror of the live hook at `~/.hermes/agent-hooks/`. |
 
 ## Quickstart — orchestrate a project
 
