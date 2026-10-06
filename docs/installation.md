@@ -212,6 +212,10 @@ cd E:/hermes-orchestrator && bash scripts/smoke-test.sh
 The smoke test boots a throwaway project in a temp dir and asserts every script contract
 (bootstrap, worktree, launch dry-runs, doc-stats self-test).
 
+For a one-command §9 convention re-check — CLI versions + the three launch dry-runs + the key
+flags in the live CLIs — run `bash scripts/preflight.sh` (exit ≠ 0 = drift; run it after ANY
+CLI upgrade and before a round).
+
 ## 5. First orchestrated project (quickstart)
 
 ```bash
@@ -256,6 +260,7 @@ the composed command. Operational rules learned live (details: `docs/agent-matri
 | 6 | Hook behavior | `bash scripts/agent-hooks/test-guard.sh` | 16 pass / 0 fail |
 | 7 | Kit scripts | `bash scripts/smoke-test.sh` | 42 passed / 0 failed |
 | 8 | Launch dry-runs | `bash scripts/launch-agent.sh <agent> <workdir> <prompt> --dry-run` | prints the verified command, no side effects |
+| 9 | One-command §9 re-check | `bash scripts/preflight.sh` | `PREFLIGHT: 11 passed, 0 failed` (verified 2026-10-07) |
 
 ## 8. Troubleshooting
 
@@ -280,7 +285,7 @@ the composed command. Operational rules learned live (details: `docs/agent-matri
 | opencode | 1.18.35 (npm global, `opencode-ai`; upgrade with `--prefix "$APPDATA/npm"`) |
 | devin | 3000.11.3 `9c803229faa4` (`%LOCALAPPDATA%\devin\cli\bin\devin.exe`) |
 | node / npm | v26.7.0 / 11.19.0 (Node bundled with Hermes) |
-| kit smoke test | 42 passed / 0 failed |
+| kit smoke test | 43 passed / 0 failed |
 | guard hook | kit mirror **identical** to live; 16/16 synthetic tests; allowlisted 2026-10-06, unchanged since |
 | `hermes hooks doctor` | healthy — exists · allowlisted · unchanged · runs clean |
 | superpowers plugin | 6.4.2 (`hermes plugins`; skills namespaced `superpowers:*`; up to date) |

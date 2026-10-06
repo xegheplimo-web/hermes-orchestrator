@@ -71,11 +71,28 @@
       "verify": ["bash scripts/smoke-test.sh", "bash scripts/agent-hooks/test-guard.sh", "bash scripts/launch-agent.sh <agent> <workdir> <prompt> --dry-run", "opencode run ... say OPENCODE_SMOKE_OK", "devin ... reply exactly DEVIN_SMOKE_OK", "devin doctor", "hermes plugins doctor superpowers", "python scripts/doc-stats.py ."],
       "fail_count": 0,
       "notes": "Executed 2026-10-07 on Sếp's go (A+B+C). Superpowers install needed --force over the community-source CAUTION scan (findings were docs/tests noise; plugin code reviewed before override). Deviations: devin update deferred until the R11 devin session exited, then ran clean; opencode npm postinstall skipped by the allow-scripts policy (harmless — binary + smoke verified). Evidence in VERIFICATION.md."
+    },
+    {
+      "id": "T-107",
+      "title": "preflight.sh — một lệnh §9-check (versions · dry-runs · flag greps) + lesson sync vào skills",
+      "status": "done",
+      "agent": "hermes",
+      "scope": ["scripts/preflight.sh", "docs/installation.md", ".orchestrator/**"],
+      "deliverables": [
+        "scripts/preflight.sh: CLI versions + 3x dry-run vs §9 + key-flag greps in the live CLIs; exit != 0 = drift",
+        "docs/installation.md: §4 + §7 (row 9) reference the script; §9 inventory now 43/43",
+        "skill sync: lead-orchestrator §9/§11 (preflight) · opencode + cline-cli (npm --prefix upgrades) · hermes-self-upgrade (update-check topology quirk) · multi-agent-orchestration (canonical cross-pointer)"
+      ],
+      "acceptance": ["preflight green on this machine", "kit smoke green (syntax auto-covered; 43/43)", "docs + skill reference the script"],
+      "verify": ["bash scripts/preflight.sh", "bash scripts/smoke-test.sh"],
+      "fail_count": 0,
+      "notes": "First concrete round-end improvement item (Sếp: keep quality + speed compounding). Canary 2026-10-07: PREFLIGHT 11 passed / 0 failed; smoke 43/43."
     }
   ],
   "backlog": [
     {"id": "T-101", "title": "status renderer: TASKS.json -> compact board (python, stdout only)", "suggested_agent": "opencode"},
     {"id": "T-102", "title": "secret-scan pre-commit hook", "suggested_agent": "opencode"},
-    {"id": "T-103", "title": "CI workflow: shellcheck + smoke-test on push", "suggested_agent": "cline"}
+    {"id": "T-103", "title": "CI workflow: shellcheck + smoke-test on push", "suggested_agent": "cline"},
+    {"id": "T-108", "title": "round ledger: auto-append rows from agent_logs/*_result.json to the verification doc", "suggested_agent": "opencode"}
   ]
 }

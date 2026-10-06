@@ -12,13 +12,14 @@
 - 2026-10-06 — **T-104** GitHub publish: public repo `xegheplimo-web/hermes-orchestrator`; `origin` + `main` tracking set; push verified via `git ls-remote`; secrets scan clean.
 - 2026-10-06 — **T-105** installation guide: `docs/installation.md` (verified commands + expected outputs, 9 sections) + README install section; CLI syntax re-verified against installed `--help` for all three agents.
 - 2026-10-07 — **T-106** upgrade lane: opencode **1.18.35** · devin **3000.11.3** (`9c803229faa4`) · Superpowers plugin live (`superpowers:*`); §9 re-verify green; `docs/installation.md` synced (evidence in `VERIFICATION.md`).
+- 2026-10-07 — **T-107** preflight: `scripts/preflight.sh` — 1-command §9 check (versions · 3× dry-run · flag greps; canary 11/11, smoke 43/43); lesson sync vào 5 skills (npm --prefix → opencode/cline-cli; update-check topology quirk → hermes-self-upgrade; cross-pointer → multi-agent-orchestration).
 
 ## In progress
 - none
 
 ## Next up (backlog — see TASKS.json)
 - T-101 status renderer (`TASKS.json` → compact board, python stdlib).
-- T-102 secret-scan pre-commit hook. T-103 CI (shellcheck + smoke).
+- T-102 secret-scan pre-commit hook. T-103 CI (shellcheck + smoke). T-108 round ledger from `agent_logs/*_result.json` (new).
 - Use case #1: run the first real multi-agent project on top of this kit.
 
 ## Blocked
