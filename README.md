@@ -8,6 +8,9 @@ orchestrator verification makes DONE.
 Born on this machine (`E:\hermes-orchestrator`, 2026-10-06) from Sếp's canonical brief. Pairs with
 the Hermes skill `lead-orchestrator`.
 
+**Repo:** <https://github.com/xegheplimo-web/hermes-orchestrator> ·
+**Setup:** [`docs/installation.md`](docs/installation.md) — the full verified installation guide.
+
 ## Layout
 
 | Path | Purpose |
@@ -17,6 +20,7 @@ the Hermes skill `lead-orchestrator`.
 | `docs/gates.md` | Build gates + DONE definition + per-stack command sets + diff hygiene. |
 | `docs/git-orchestration.md` | Worktree-per-task flow; who may touch git; merge discipline. |
 | `docs/governance.md` | Governance v3: permission tiers (AUTO/GATED/BLOCKED), maintenance lane, audit cadence, result contract, live guard hook. |
+| `docs/installation.md` | Full installation & setup guide — prerequisites, agent CLIs, provider auth, skill + guard hook, kit self-test, verification checklist (verified commands + expected outputs). |
 | `templates/task-card.md` | Mandatory task format (prompt §7). |
 | `templates/decision-plan.md` | Pre-execution plan format (§28). |
 | `templates/final-report.md` | Final report format (§30). |
@@ -28,7 +32,20 @@ the Hermes skill `lead-orchestrator`.
 | `scripts/launch-agent.sh` | Launch cline/opencode/devin on a prompt file: timeout + log + exit marker (`--dry-run`). |
 | `scripts/smoke-test.sh` | Self-test for all scripts (throwaway project in a temp dir), incl. the doc-stats self-test. |
 | `scripts/doc-stats.py` | Documentation & roadmap statistics for a project: inventory, staleness vs HEAD, checklist progress, control-plane audit (`--json`, `--strict`). |
-| `scripts/agent-hooks/` | Guard hook `block-dangerous.sh` + 16 synthetic tests — mirror of the live hook at `~/.hermes/agent-hooks/`. |
+| `scripts/agent-hooks/` | Guard hook `block-dangerous.sh` + 16 synthetic tests — mirror of the live hook at `%LOCALAPPDATA%\hermes\agent-hooks\`. |
+
+## Install
+
+Full step-by-step setup (prerequisites → agent CLIs → provider auth → Hermes skill + guard hook →
+kit self-test → verification checklist): [`docs/installation.md`](docs/installation.md).
+Short path:
+
+```bash
+npm install -g cline opencode-ai          # Devin CLI: official installer from cli.devin.ai (see the guide)
+cline auth -p opencode-go -k <KEY> -m longcat-2.5-preview-free
+git clone https://github.com/xegheplimo-web/hermes-orchestrator E:/hermes-orchestrator
+bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 42 passed / 0 failed
+```
 
 ## Quickstart — orchestrate a project
 
