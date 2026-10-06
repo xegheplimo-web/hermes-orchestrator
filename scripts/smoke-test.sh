@@ -76,6 +76,23 @@ chk_contains "dry-run devin shows dangerous mode" "devin --respect-workspace-tru
 
 chk "dry-run created no log" test ! -f "$WT/T-101/agent_logs/T-101.log"
 
+echo "== 5. doc-stats.py self-test =="
+DST_OUT="$(bash "$HERE/test-doc-stats.sh" 2>&1)"
+case "$DST_OUT" in
+  *"ALL GREEN — "*)
+    n="${DST_OUT##*ALL GREEN — }"; n="${n%% passed*}"
+    case "$n" in ''|*[!0-9]*) n=0 ;; esac
+    PASS=$((PASS+n)); echo "  PASS  doc-stats self-test ($n checks)"
+    ;;
+  *SKIPPED*)
+    echo "  SKIP  doc-stats self-test (no python)"
+    ;;
+  *)
+    FAIL=$((FAIL+1)); echo "  FAIL  doc-stats self-test"
+    printf '%s\n' "$DST_OUT" | tail -15
+    ;;
+esac
+
 echo
 if [ "$FAIL" -eq 0 ]; then
   echo "SMOKE: ALL GREEN — $PASS passed, 0 failed"
