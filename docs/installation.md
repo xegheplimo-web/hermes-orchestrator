@@ -173,7 +173,7 @@ devin --respect-workspace-trust false --permission-mode dangerous -p -- "<prompt
 
 ### 3.1 Skill `lead-orchestrator`
 
-Place the skill (and its companion agent skills `devin-cli`, `cline-cli`, `opencode`,
+Place the skill (and its companion agent skills `devin-mcp`, `cline-cli`, `opencode`,
 `multi-agent-orchestration`) under:
 
 ```
