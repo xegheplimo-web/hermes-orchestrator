@@ -36,6 +36,16 @@ Extended evidence (aoe-native-agent program, Oct 2026): Devin 8/8 first-try (inc
 - A "failure" is also: did nothing / partial artifact / auto-rejected calls — not just a crash.
 - Cost-aware: cheapest agent that can safely finish; don't save in the wrong place.
 
+### Routing memory (agent × task-type — living; update at DONE)
+
+| Agent | First-try strengths (observed) | Weak spots → route elsewhere |
+|---|---|---|
+| Devin | architecture · core logic · RE / live bring-up · refactor · hard bugs with unknown cause (8/8 first-try — aoe program) | reserve for real difficulty |
+| Cline | medium features · API/UI · docs · build+run infra (4/4 — aoe program) | long rewrite-from-corruption stalls without writing (28' live) → send to Devin |
+| OpenCode | boilerplate · unit tests · docs · review/cleanup (2/2 — aoe program) | over-explores on fuzzy tasks → give a write-first instruction |
+
+Per round: record agent × task-type × outcome (+ failure mode, wall time) in the round ledger; consult this table before every assignment; update it at DONE. The table is the assignment ground truth — new evidence lands here.
+
 ## Pitfalls (observed live)
 
 - **Devin**: print mode cannot answer permission prompts — needs `--permission-mode dangerous` +

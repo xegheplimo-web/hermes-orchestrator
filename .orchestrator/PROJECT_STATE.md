@@ -15,6 +15,7 @@
 - 2026-10-07 — **T-107** preflight: `scripts/preflight.sh` — 1-command §9 check (versions · 3× dry-run · flag greps; canary 11/11, smoke 43/43); lesson sync vào 5 skills (npm --prefix → opencode/cline-cli; update-check topology quirk → hermes-self-upgrade; cross-pointer → multi-agent-orchestration).
 - 2026-10-07 — **T-109** PR review loop adopted (D-005): `resolve-reviews` / `resolve-agent-reviews` / `resolve-human-reviews` skills installed via Hub (pbakaus/agent-reviews, MIT) + `docs/git-orchestration.md` §PR review loop + `gates.md` DONE line + `PROMPT.md` §16 extension; smoke re-run green (see `VERIFICATION.md`).
 - 2026-10-07 — **T-110** cline `-t` drift sync (after 23c476f): preflight expectation → `-t 1380` + 9 stale literals across docs/README/skill + smoke-count rows (42→43); gates re-verified (PREFLIGHT 11/11 · SMOKE 43/43).
+- 2026-10-07 — **T-111** §0 core vận hành adopted (D-006): `PROMPT.md` §0 (bản ngắn của Sếp — Lead Orchestrator + Technical Owner) + `docs/agent-matrix.md` Routing memory + skill `lead-orchestrator` §0/§13 + `multi-agent-orchestration` standing rules; gates re-run green (see `VERIFICATION.md`).
 
 ## In progress
 - none
@@ -28,4 +29,4 @@
 - none
 
 ## Key decisions (see DECISIONS.md)
-- **D-001** kit created · **D-002** `PROMPT.md` is the canonical prompt · **D-003** agents write files, Hermes owns git · **D-004** repo published public on GitHub (Hermes owns push) · **D-005** PR review loop adopted (zero unanswered review comments before DONE).
+- **D-001** kit created · **D-002** `PROMPT.md` is the canonical prompt · **D-003** agents write files, Hermes owns git · **D-004** repo published public on GitHub (Hermes owns push) · **D-005** PR review loop adopted (zero unanswered review comments before DONE) · **D-006** §0 core vận hành + routing memory (2026-10-07).

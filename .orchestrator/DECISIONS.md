@@ -35,3 +35,15 @@ One entry per binding decision. Newest at the bottom. Frozen interfaces/names ch
   `resolve-human-reviews` (pbakaus/agent-reviews, MIT) over `npx agent-reviews` (auth via `gh`).
 - Gate: zero unanswered review comments before merge/DONE (skip only by explicit user
   decision, stated in the report). Bot comments are claims to verify — never authority.
+
+## D-006 (2026-10-07) — §0 core vận hành (bản ngắn) + routing memory
+
+- Sếp chốt bản prompt ngắn: **Lead Orchestrator + Technical Owner** — recon toàn dự án trước khi
+  hành động · tài liệu chỉ để tham khảo (toàn quyền giữ/sửa/thay/thay thế) · quy trình
+  Recon → Analyze → Decide → Plan → Assign → Implement → Verify → Fix → Integrate → Final Verify ·
+  hoàn thành phải kiểm chứng bằng code/runtime/test/benchmark/integration. Thêm vào `PROMPT.md` §0;
+  §1–§31 giữ nguyên làm bản chi tiết tham chiếu.
+- Kèm theo: luật **học có chọn lọc** (chỉ lưu bài học tái sử dụng; ưu tiên cập nhật skill; memory
+  chỉ cho luật áp dụng rộng; không học từ phỏng đoán/chưa test; thay thế bài học đã sai) + **routing
+  memory** (agent × task-type, cập nhật theo round) → skill `lead-orchestrator` (§0/§13) +
+  `docs/agent-matrix.md`.

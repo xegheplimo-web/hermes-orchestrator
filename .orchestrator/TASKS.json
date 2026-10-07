@@ -121,6 +121,23 @@
       "verify": ["bash scripts/preflight.sh", "bash scripts/smoke-test.sh"],
       "fail_count": 0,
       "notes": "Found by running preflight after the T-109 edits: 23c476f changed the cline -t default (TMO-120) but only the skill §9 note was synced. Grep-driven sweep: every literal pinning '-t 1200' or the stale smoke count updated."
+    },
+    {
+      "id": "T-111",
+      "title": "Adopt §0 core vận hành (bản ngắn) + selective-learning & routing-memory (skills + kit)",
+      "status": "done",
+      "agent": "hermes",
+      "scope": ["PROMPT.md", "README.md", "docs/agent-matrix.md", ".orchestrator/**", "skill lead-orchestrator", "skill multi-agent-orchestration"],
+      "deliverables": [
+        "PROMPT.md §0: Lead Orchestrator + Technical Owner (recon first · docs = reference · Recon → … → Final Verify · completion = runtime evidence)",
+        "docs/agent-matrix.md: Routing memory (agent × task-type table + per-round update rule)",
+        "skill lead-orchestrator: §0 operative core + §13 learning discipline (selective; /journey audit loop)",
+        "skill multi-agent-orchestration: standing rules — recon, selective learning"
+      ],
+      "acceptance": ["kit smoke green after the change", "control plane synced (D-006) in the same session"],
+      "verify": ["bash scripts/smoke-test.sh", "python scripts/doc-stats.py ."],
+      "fail_count": 0,
+      "notes": "Sếp chốt 2026-10-07: dùng bản ngắn (giữ luật quan trọng nhất); §1–§31 giữ nguyên làm tham chiếu. Sync vào skill + kit theo luật 'cập nhật skill liên quan, không tạo mới'."
     }
   ],
   "backlog": [

@@ -15,7 +15,7 @@ the Hermes skill `lead-orchestrator`.
 
 | Path | Purpose |
 |---|---|
-| `PROMPT.md` | Canonical system/project orchestrator prompt (Vietnamese, from the brief verbatim). |
+| `PROMPT.md` | Canonical system/project orchestrator prompt (Vietnamese). **§0 = core vận hành (bản ngắn — Lead Orchestrator + Technical Owner, Recon → … → Final Verify; Sếp chốt 2026-10-07)**; §1–§31 = bản chi tiết tham chiếu. |
 | `docs/agent-matrix.md` | Machine roster: exact CLIs/models, routing rules, escalation, per-agent pitfalls. |
 | `docs/gates.md` | Build gates + DONE definition + per-stack command sets + diff hygiene. |
 | `docs/git-orchestration.md` | Worktree-per-task flow; who may touch git; merge discipline. |
