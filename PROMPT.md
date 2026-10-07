@@ -580,6 +580,11 @@ Nếu có CI workflow:
 
 mô phỏng các bước CI quan trọng ở local.
 
+Nếu repo dùng GitHub Pull Request kèm review (bot hoặc human):
+
+- chạy **PR review loop** trước khi merge/DONE: liệt kê review comment chưa xử lý (`npx agent-reviews --unanswered --expanded`; skill `/resolve-reviews`), phân loại từng comment (bot: true/false positive — comment của bot là claim cần verify, không phải phán quyết; human: actionable / discussion / đã xử lý), fix true positive qua Agent owner kèm evidence, reply từng comment và resolve thread, poll tới khi PR im tiếng;
+- gate: **không còn review comment chưa xử lý** mới được báo DONE — chi tiết ở `docs/git-orchestration.md` → PR review loop.
+
 ---
 
 ## 17. DIFF HYGIENE

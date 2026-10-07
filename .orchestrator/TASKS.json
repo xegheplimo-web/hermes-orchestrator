@@ -87,6 +87,40 @@
       "verify": ["bash scripts/preflight.sh", "bash scripts/smoke-test.sh"],
       "fail_count": 0,
       "notes": "First concrete round-end improvement item (Sếp: keep quality + speed compounding). Canary 2026-10-07: PREFLIGHT 11 passed / 0 failed; smoke 43/43."
+    },
+    {
+      "id": "T-109",
+      "title": "PR review loop — agent-reviews skills + kit integration (docs/gates/PROMPT/skill)",
+      "status": "done",
+      "agent": "hermes",
+      "scope": ["docs/git-orchestration.md", "docs/gates.md", "PROMPT.md", ".orchestrator/**", "skill lead-orchestrator"],
+      "deliverables": [
+        "Hub skills resolve-reviews / resolve-agent-reviews / resolve-human-reviews installed (pbakaus/agent-reviews, MIT)",
+        "docs/git-orchestration.md: §PR review loop (fetch → classify → act → poll → gate)",
+        "docs/gates.md: DONE line 'Review comments PASS' + evidence bullet",
+        "PROMPT.md §16 extension + skill lead-orchestrator v1.2.0 (§2 7b + §12)"
+      ],
+      "acceptance": ["kit smoke green after the change", "resolve-* skills listed enabled + up_to_date", "control plane synced (D-005) in the same session"],
+      "verify": ["bash scripts/smoke-test.sh", "hermes skills check"],
+      "fail_count": 0,
+      "notes": "Sếp chốt 2026-10-07 sau phân tích pbakaus/agent-reviews: cài 3 skill + thêm bước vào kit/quy trình. D-005. Skills run npx agent-reviews at runtime; auth reuses gh."
+    },
+    {
+      "id": "T-110",
+      "title": "Sync cline -t default (TMO-120 = 1380) after 23c476f — preflight + docs + skill",
+      "status": "done",
+      "agent": "hermes",
+      "scope": ["scripts/preflight.sh", "docs/agent-matrix.md", "docs/installation.md", "README.md", "skill lead-orchestrator"],
+      "deliverables": [
+        "preflight expectation synced: cline dry-run `-t 1380` (was 1200)",
+        "docs/agent-matrix.md ×2 + docs/installation.md ×3 (command row · smoke comment · checklist row 42→43) + README smoke count",
+        "skill lead-orchestrator §6 bullet + §9 snippet → `-t 1380`",
+        "drift gate-clean: PREFLIGHT 11/11 + SMOKE 43/43"
+      ],
+      "acceptance": ["PREFLIGHT: 11 passed, 0 failed", "SMOKE: ALL GREEN — 43 passed, 0 failed"],
+      "verify": ["bash scripts/preflight.sh", "bash scripts/smoke-test.sh"],
+      "fail_count": 0,
+      "notes": "Found by running preflight after the T-109 edits: 23c476f changed the cline -t default (TMO-120) but only the skill §9 note was synced. Grep-driven sweep: every literal pinning '-t 1200' or the stale smoke count updated."
     }
   ],
   "backlog": [

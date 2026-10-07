@@ -18,6 +18,7 @@ Typecheck                 PASS
 Build                     PASS
 Integration               PASS
 Diff review               PASS
+Review comments           PASS   (when the flow uses PRs — zero unanswered)
 No unresolved blocker     PASS
 ```
 
@@ -43,6 +44,7 @@ If any item FAILS → STATUS = NOT DONE → Fix → Verify → Integrate → Fin
   (see `agent-matrix.md` → Field lessons).
 - **Scope check is THREE-dot** (`git diff main...HEAD`) — two-dot shows phantom noise once main
   moves ahead.
+- **PR review comments** are verification input too: fetch unanswered ones (`npx agent-reviews --unanswered`), verify each claim against the code/spec, fix true positives, reply + resolve every thread — zero unanswered before DONE (see `git-orchestration.md` → PR review loop).
 
 ## Diff hygiene (before DONE)
 

@@ -24,3 +24,14 @@ One entry per binding decision. Newest at the bottom. Frozen interfaces/names ch
   owns remote operations. Repo-local `core.autocrlf false` pinned (CRLF ghost-diff prevention).
 - `docs/installation.md` is the canonical onboarding path (verified commands + expected outputs);
   keep it in sync when CLI versions or launch conventions change.
+
+## D-005 (2026-10-07) — PR review loop adopted (task T-109)
+
+- Review comments (bot + human) are now a first-class verification input: new
+  `docs/git-orchestration.md` section (fetch → classify → act → poll → gate), a
+  `Review comments PASS` line in the `docs/gates.md` DONE checklist, a §16 extension in
+  `PROMPT.md` (controlled addition to the canonical prompt), and skill `lead-orchestrator`
+  v1.2.0 (§2 + §12). Tooling: Hub skills `resolve-reviews` / `resolve-agent-reviews` /
+  `resolve-human-reviews` (pbakaus/agent-reviews, MIT) over `npx agent-reviews` (auth via `gh`).
+- Gate: zero unanswered review comments before merge/DONE (skip only by explicit user
+  decision, stated in the report). Bot comments are claims to verify — never authority.

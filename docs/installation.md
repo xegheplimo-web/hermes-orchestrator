@@ -206,7 +206,7 @@ hermes plugins doctor superpowers                              # expect: import 
 ```bash
 git clone https://github.com/xegheplimo-web/hermes-orchestrator E:/hermes-orchestrator
 cd E:/hermes-orchestrator && bash scripts/smoke-test.sh
-# expected: SMOKE: ALL GREEN — 42 passed, 0 failed
+# expected: SMOKE: ALL GREEN — 43 passed, 0 failed
 ```
 
 The smoke test boots a throwaway project in a temp dir and asserts every script contract
@@ -232,7 +232,7 @@ Then follow `docs/git-orchestration.md` for verify → merge → bookkeeping. He
 
 | Agent | Command (run from the task worktree; prompt from file) |
 |---|---|
-| cline | `timeout 1500 cline -P opencode-go -m longcat-2.5-preview-free -t 1200 "$(cat <prompt>)"` |
+| cline | `timeout 1500 cline -P opencode-go -m longcat-2.5-preview-free -t 1380 "$(cat <prompt>)"` |
 | opencode | `timeout 1500 opencode run --model opencode/muse-spark-1.3-contributor-free --title <task> "$(cat <prompt>)"` |
 | devin | `timeout 2400 devin --respect-workspace-trust false --permission-mode dangerous -p -- "$(cat <prompt>)"` |
 
@@ -258,7 +258,7 @@ the composed command. Operational rules learned live (details: `docs/agent-matri
 | 4 | Devin health | `devin doctor` | 2 passed, 0 failures (v3000.11.3) |
 | 5 | Hook registered | `hermes hooks doctor` | all checks green |
 | 6 | Hook behavior | `bash scripts/agent-hooks/test-guard.sh` | 16 pass / 0 fail |
-| 7 | Kit scripts | `bash scripts/smoke-test.sh` | 42 passed / 0 failed |
+| 7 | Kit scripts | `bash scripts/smoke-test.sh` | 43 passed / 0 failed |
 | 8 | Launch dry-runs | `bash scripts/launch-agent.sh <agent> <workdir> <prompt> --dry-run` | prints the verified command, no side effects |
 | 9 | One-command §9 re-check | `bash scripts/preflight.sh` | `PREFLIGHT: 11 passed, 0 failed` (verified 2026-10-07) |
 

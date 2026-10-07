@@ -44,7 +44,7 @@ Short path:
 npm install -g cline opencode-ai          # Devin CLI: official installer from cli.devin.ai (see the guide)
 cline auth -p opencode-go -k <KEY> -m longcat-2.5-preview-free
 git clone https://github.com/xegheplimo-web/hermes-orchestrator E:/hermes-orchestrator
-bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 42 passed / 0 failed
+bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 43 passed / 0 failed
 ```
 
 ## Quickstart — orchestrate a project

@@ -19,7 +19,7 @@ HERMES — Lead Orchestrator (split · assign · verify · integrate · git)
 | Difficulty | Agent | Command (this machine) | Work it gets |
 |---|---|---|---|
 | Hardest: architecture, complex bugs, large refactors, core logic, integration, RE / exploratory bring-up | **Devin CLI** (SWE-2) | `devin --respect-workspace-trust false --permission-mode dangerous -p -- "<prompt>"` | architecture proposals, TDD builds, unknown-root-cause bugs, live-system bring-up (self-adapts around blockers) |
-| Medium: implementation, API/UI, tests, scoped independent tasks, build/run infra | **Cline** | `cline -P opencode-go -m longcat-2.5-preview-free -t 1200 "<prompt>"` | features, file edits, integration tests, build+run harnesses |
+| Medium: implementation, API/UI, tests, scoped independent tasks, build/run infra | **Cline** | `cline -P opencode-go -m longcat-2.5-preview-free -t 1380 "<prompt>"` | features, file edits, integration tests, build+run harnesses |
 | Light: boilerplate, tests, docs, lint/typecheck, review, small fixes | **OpenCode** | `opencode run --model opencode/muse-spark-1.3-contributor-free --title <name> "<prompt>"` | docs, unit tests, reviews, cleanups |
 | Orchestration, verification, integration, git | **Hermes (self)** | — | split, prompts, verify ALL artifacts/claims, fix, integrate, final gate |
 
@@ -46,7 +46,7 @@ Extended evidence (aoe-native-agent program, Oct 2026): Devin 8/8 first-try (inc
   — match the path when stopping.
 - **Cline**: infra crashes possible mid-run (hook/socket, especially at large file writes) → exit 1
   with partial artifacts. Smoke-test recovery (say SMOKE_OK), retry once with a NARROWER scope,
-  then escalate. Use `-t 1200` task timeout AND a shell `timeout` wrapper. **Provider stream errors
+  then escalate. Use `-t` (task timeout; default `TMO-120` = 1380) AND a shell `timeout` wrapper. **Provider stream errors
   can kill a run even at the final commit** — inspect the worktree; if the work is complete, the
   orchestrator completes the commit (see Field lessons).
 - **OpenCode**: auto-rejects reads outside the project (`permission.external_directory` in

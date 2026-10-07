@@ -46,6 +46,27 @@ merge / DONE
   `_prompts/T-xxx-resume.md` (state · paths · continuation steps); resume = re-dispatch with a
   continuation prompt pointing at that note.
 
+## PR review loop (when the round lands as a GitHub PR)
+
+Review comments are part of verification. When a PR receives reviews — bots (Copilot,
+Cursor Bugbot, CodeRabbit, Gemini, Sonar, Sourcery, Codacy…) and/or humans — run this
+loop after pushing and BEFORE reporting DONE. Tooling: Hub skills `resolve-reviews` /
+`resolve-agent-reviews` / `resolve-human-reviews` (pbakaus/agent-reviews, MIT) drive
+`npx agent-reviews` (auth reuses `gh`; nothing to configure).
+
+1. **Fetch** — `npx agent-reviews --unanswered --expanded` lists every unanswered comment
+   (ID, diff hunk, replies). Zero comments → skip to step 5.
+2. **Classify** — bot: TRUE POSITIVE / FALSE POSITIVE; human: actionable / discussion /
+   already addressed. A bot comment is a claim to verify against the code and the spec,
+   never an authority — Hermes owns the classification.
+3. **Act** — TRUE POSITIVE → fix via the owning agent (exact comment + evidence; the
+   fail#1/fail#2 policy applies); FALSE POSITIVE → keep the code, reply with the reason;
+   discussion → Hermes decides or asks Sếp. Reply to EVERY comment with the outcome.
+4. **Poll** — watch until the PR goes quiet; bot doom-loops ("fix → push → new comments")
+   resolve through the same loop instead of being chased by hand.
+5. **Gate** — zero unanswered review comments before merge/DONE (skip only by explicit
+   Sếp decision, stated in the report).
+
 ## Commands
 
 ```bash
