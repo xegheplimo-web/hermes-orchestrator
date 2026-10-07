@@ -43,8 +43,14 @@ if [ -n "$seg" ]; then
 fi
 
 # 2) Name-based kills of user-facing apps (live incidents: cline-app.exe, Get-Process Devin)
-if printf '%s' "$cmd" | grep -Eq '(Stop-Process[^|;&]*-Name[^|;&]*(Devin|Hermes|cline-app)|taskkill[^|;&]*/IM[^|;&]*(Devin|Hermes|cline-app)|Get-Process[[:space:]]+.?Devin[^|;&]*\|)'; then
+#    Refined 2026-10-07: read-only process queries stay allowed; only kill verbs are blocked
+#    (the old pattern also blocked read-only `Get-Process Devin | Select ...` probes — false positive).
+if printf '%s' "$cmd" | grep -Eq '(Stop-Process[^|;&]*-Name[^|;&]*(Devin|Hermes|cline-app)|taskkill[^|;&]*/IM[^|;&]*(Devin|Hermes|cline-app))'; then
   deny "blocked by guard: name-based kill of a user-facing app (Devin/Hermes/cline-app). Kill the CLI by its exact install path instead"
+fi
+if printf '%s' "$cmd" | grep -Eq 'Get-Process[^|;&]*(Devin|Hermes|cline-app)' \
+   && printf '%s' "$cmd" | grep -Eq '(Stop-Process|taskkill)'; then
+  deny "blocked by guard: pipeline kill of a user-facing app (Devin/Hermes/cline-app) via Get-Process. Kill the CLI by its exact install path instead"
 fi
 
 # 3) rm -rf on protected roots (boundary match: `aoe-native-agent-worktrees` is NOT matched)

@@ -286,6 +286,6 @@ the composed command. Operational rules learned live (details: `docs/agent-matri
 | devin | 3000.11.3 `9c803229faa4` (`%LOCALAPPDATA%\devin\cli\bin\devin.exe`) |
 | node / npm | v26.7.0 / 11.19.0 (Node bundled with Hermes) |
 | kit smoke test | 43 passed / 0 failed |
-| guard hook | kit mirror **identical** to live; 16/16 synthetic tests; allowlisted 2026-10-06, unchanged since |
+| guard hook | kit mirror **identical** to live; 19/19 synthetic tests; re-approved 2026-10-07 after the read-only-query refinement |
 | `hermes hooks doctor` | healthy — exists · allowlisted · unchanged · runs clean |
 | superpowers plugin | 6.4.2 (`hermes plugins`; skills namespaced `superpowers:*`; up to date) |

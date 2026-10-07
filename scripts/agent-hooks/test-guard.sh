@@ -36,6 +36,11 @@ check block "taskkill cline-app"          "taskkill //IM cline-app.exe //F"
 check allow "Stop-Process by PID"         "powershell -NoProfile -Command \"Stop-Process -Id 1234 -Force\""
 check allow "kill by exact path"          "powershell -NoProfile -Command \"Stop-Process -Id 4321 -Force\""
 
+# -- Get-Process pipeline (refined 2026-10-07: read-only queries allowed, pipeline kills blocked)
+check allow "Get-Process Devin read-only" "powershell -NoProfile -Command \"Get-Process Devin -ErrorAction SilentlyContinue | Select-Object Id, StartTime | Format-Table -AutoSize\""
+check block "Get-Process Devin piped kill" "powershell -NoProfile -Command \"Get-Process Devin | Stop-Process -Force\""
+check block "Get-Process -Name Devin piped" "powershell -NoProfile -Command \"Get-Process -Name Devin | Stop-Process\""
+
 # -- benign
 check allow "benign echo"                 "echo hello"
 check allow "git status"                  "git status --short"

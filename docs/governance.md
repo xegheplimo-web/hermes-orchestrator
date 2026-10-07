@@ -23,7 +23,7 @@ never by prompt hope.
   (Devin desktop / Hermes / cline-app — kill CLIs by exact path instead) · **`rm -rf` of protected
   roots** (main repos / Hermes home — subpaths like worktrees stay allowed).
 - Audit trail: `~/.hermes/logs/guard.log` (one line per fire: BLOCK/ALLOW + command).
-- Tests: `scripts/agent-hooks/test-guard.sh` (16 synthetic cases incl. false-positive checks).
+- Tests: `scripts/agent-hooks/test-guard.sh` (19 synthetic cases incl. false-positive checks; 2026-10-07 refinement: read-only `Get-Process` queries allowed, pipeline kills blocked).
   Extend patterns ONLY with an incident behind them.
 
 ## 2. Maintenance lane (infra failure ≠ project failure)

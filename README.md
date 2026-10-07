@@ -32,7 +32,7 @@ the Hermes skill `lead-orchestrator`.
 | `scripts/launch-agent.sh` | Launch cline/opencode/devin on a prompt file: timeout + log + exit marker (`--dry-run`). |
 | `scripts/smoke-test.sh` | Self-test for all scripts (throwaway project in a temp dir), incl. the doc-stats self-test. |
 | `scripts/doc-stats.py` | Documentation & roadmap statistics for a project: inventory, staleness vs HEAD, checklist progress, control-plane audit (`--json`, `--strict`). |
-| `scripts/agent-hooks/` | Guard hook `block-dangerous.sh` + 16 synthetic tests — mirror of the live hook at `%LOCALAPPDATA%\hermes\agent-hooks\`. |
+| `scripts/agent-hooks/` | Guard hook `block-dangerous.sh` + 19 synthetic tests — mirror of the live hook at `%LOCALAPPDATA%\hermes\agent-hooks\`. |
 
 ## Install
 
