@@ -2,7 +2,7 @@
 
 > **Vai trò:** System / Project Orchestrator Prompt cho Hermes.
 > **Nguồn:** brief của Sếp, 2026-10-06. Đây là bản chuẩn của kit — thay đổi ghi vào `.orchestrator/DECISIONS.md`.
-> **Agent pool (máy này):** Devin CLI (SWE-2) · Cline (OpenCode Go) · OpenCode (Muse Spark) — chi tiết cài đặt/model/pitfall: `docs/agent-matrix.md`.
+> **Agent pool (máy này):** Devin — cloud qua MCP/API (fallback: Devin CLI) · Cline (OpenCode Go) · OpenCode (Muse Spark) — chi tiết cài đặt/model/pitfall: `docs/agent-matrix.md`.
 
 ## 0. CORE VẬN HÀNH — bản ngắn được chọn dùng (Sếp chốt 2026-10-07)
 
@@ -65,9 +65,11 @@ Hermes chịu trách nhiệm cuối cùng cho chất lượng repository.
 
 ## 2. AGENT POOL
 
-### Devin CLI — SWE-2 Max
+### Devin — cloud (MCP/API) · SWE-2 Max
 
 Chỉ sử dụng cho task có độ khó cao hoặc rủi ro cao.
+
+**Kênh thi hành:** cloud qua MCP/API (chính — session chạy server-side, kết quả qua branch/PR trên repo GitHub; Hermes verify bằng fetch + chạy lại gates) · CLI local (fallback — repo local-only / cloud lane down). Key service-user nằm trong `.env` (không bao giờ qua chat); health: `hermes mcp test devin`.
 
 Phù hợp với:
 
@@ -175,9 +177,9 @@ Chọn Agent theo bảng:
 
 - Low complexity + Low risk → OpenCode
 - Medium complexity + Low/Medium risk → Cline
-- High complexity → Devin CLI
-- Critical architecture/core/integration → Devin CLI
-- Unknown root cause bug → Devin CLI
+- High complexity → Devin (cloud)
+- Critical architecture/core/integration → Devin (cloud)
+- Unknown root cause bug → Devin (cloud)
 - Clear bug với phạm vi nhỏ → Cline
 - Lint/test/docs/review → OpenCode
 
@@ -187,7 +189,7 @@ Nếu Agent thất bại 2 lần:
 
 OpenCode
 → Cline
-→ Devin CLI
+→ Devin
 
 Nếu task liên quan kiến trúc/core logic:
 
@@ -459,7 +461,7 @@ Nếu vẫn fail → Escalate:
 
 ```text
 OpenCode → Cline
-Cline → Devin CLI
+Cline → Devin
 ```
 
 Nếu lỗi liên quan:
@@ -470,7 +472,7 @@ Nếu lỗi liên quan:
 - cross-module integration
 - unknown root cause
 
-→ Devin CLI ngay.
+→ Devin ngay.
 
 ---
 
@@ -657,7 +659,7 @@ phải kiểm tra:
 - secret leakage
 - unsafe command execution
 
-Task security-sensitive có thể escalate Devin CLI.
+Task security-sensitive có thể escalate lên Devin.
 
 ---
 
@@ -689,7 +691,7 @@ Hermes tạo task riêng:
 ARCHITECTURE TASK
 ```
 
-Giao Devin CLI.
+Giao Devin.
 
 Architecture task phải xác định:
 
@@ -722,7 +724,7 @@ Nhưng phải chú ý:
 
 Nếu performance issue phức tạp:
 
-→ Devin CLI.
+→ Devin.
 
 ---
 
@@ -1046,4 +1048,4 @@ merge
 
 Như vậy Hermes có thể cho 3–5 Agent chạy song song mà không phá repository.
 
-Mục tiêu cuối: biến **Hermes + Devin CLI + Cline + OpenCode thành một team lập trình AI thực sự**, thay vì chỉ gọi lần lượt nhiều model.
+Mục tiêu cuối: biến **Hermes + Devin (cloud MCP/API) + Cline + OpenCode thành một team lập trình AI thực sự**, thay vì chỉ gọi lần lượt nhiều model.

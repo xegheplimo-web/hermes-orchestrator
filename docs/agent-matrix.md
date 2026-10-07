@@ -1,4 +1,4 @@
-# Agent matrix — this machine (verified 2026-10-06 · extended by the aoe-native-agent program)
+# Agent matrix — this machine (verified 2026-10-06 · extended by the aoe-native-agent program · Devin lane → cloud MCP/API 2026-10-08)
 
 ## The loop (canonical)
 
@@ -18,7 +18,7 @@ HERMES — Lead Orchestrator (split · assign · verify · integrate · git)
 
 | Difficulty | Agent | Command (this machine) | Work it gets |
 |---|---|---|---|
-| Hardest: architecture, complex bugs, large refactors, core logic, integration, RE / exploratory bring-up | **Devin CLI** (SWE-2) | `devin --respect-workspace-trust false --permission-mode dangerous -p -- "<prompt>"` | architecture proposals, TDD builds, unknown-root-cause bugs, live-system bring-up (self-adapts around blockers) |
+| Hardest: architecture, complex bugs, large refactors, core logic, integration, RE / exploratory bring-up | **Devin** (SWE-2) — cloud via MCP `mcp__devin__*` (primary) · CLI = local fallback | cloud: `mcp__devin__*` session tools (create → poll → fetch PR) · fallback: `devin --respect-workspace-trust false --permission-mode dangerous -p -- "<prompt>"` | architecture proposals, TDD builds, unknown-root-cause bugs, live-system bring-up (self-adapts around blockers) |
 | Medium: implementation, API/UI, tests, scoped independent tasks, build/run infra | **Cline** | `cline -P opencode-go -m longcat-2.5-preview-free -t 1380 "<prompt>"` | features, file edits, integration tests, build+run harnesses |
 | Light: boilerplate, tests, docs, lint/typecheck, review, small fixes | **OpenCode** | `opencode run --model opencode/muse-spark-1.3-contributor-free --title <name> "<prompt>"` | docs, unit tests, reviews, cleanups |
 | Orchestration, verification, integration, git | **Hermes (self)** | — | split, prompts, verify ALL artifacts/claims, fix, integrate, final gate |
@@ -48,7 +48,13 @@ Per round: record agent × task-type × outcome (+ failure mode, wall time) in t
 
 ## Pitfalls (observed live)
 
-- **Devin**: print mode cannot answer permission prompts — needs `--permission-mode dangerous` +
+- **Devin — cloud (MCP/API, primary since 2026-10-08)**: sessions run server-side — no local
+  process to watch or kill; drive via the `mcp__devin__*` tools (create → poll status/messages →
+  take result). Quota-billed per session → no speculative runs. Auth: `MCP_DEVIN_API_KEY` in
+  `%LOCALAPPDATA%\hermes\.env`; org-scoped keys auto-resolve the org (enterprise: `X-Org-Id`).
+  Tokens never transit chat; health: `hermes mcp test devin`. GitHub-connected repos only — verify
+  by fetching the branch/PR locally and re-running the gates; local-only repos use the CLI lane below.
+- **Devin — local CLI (fallback)**: print mode cannot answer permission prompts — needs `--permission-mode dangerous` +
   `--respect-workspace-trust false` for out-of-workspace reads. Exit 0 ≠ success (verify the
   artifact). Leaves `.serena/` in the workspace (gitignored here). **Kill by path, never by name** —
   `Get-Process Devin` also matches the user's Devin DESKTOP app (`%LOCALAPPDATA%\Programs\Devin`,
@@ -87,4 +93,6 @@ Per round: record agent × task-type × outcome (+ failure mode, wall time) in t
 ## Launch
 
 Use `scripts/launch-agent.sh` — it applies the exact commands above plus wall-clock `timeout`,
-log redirect, and an `EXIT=<code>` marker. `--dry-run` prints the command without running.
+log redirect, and an `EXIT=<code>` marker. `--dry-run` prints the command without running. Devin's
+**cloud** lane runs from Hermes tool calls instead (`mcp__devin__*`; setup `docs/installation.md`
+§2.3, health `hermes mcp test devin`) — the launcher covers the local CLI lanes.

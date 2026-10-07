@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # preflight.sh — one-command §9 convention check for the orchestrator kit.
 # Checks: agent CLIs on PATH + versions · launch-agent.sh dry-runs still match the
-# §9 launch conventions · key flags still present in the live CLIs.
+# §9 launch conventions · key flags still present in the live CLIs · Devin cloud lane
+# (MCP endpoint reachable · server registered · API key present).
 # Read-only (writes only to a temp dir). Exit 0 = all green.
 # Any FAIL = drift → resync §9 (docs/installation.md + skill lead-orchestrator §9),
 # then re-run this script. Run after ANY CLI upgrade and before a round.
@@ -58,9 +59,24 @@ flag "opencode run help: --variant" "--variant" opencode run --help
 flag "devin help: --permission-mode" "--permission-mode" devin --help
 flag "devin help: --respect-workspace-trust" "--respect-workspace-trust" devin --help
 
+echo "== 3b. Devin cloud lane (MCP/API) =="
+code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://mcp.devin.ai/ 2>/dev/null)"
+[ "$code" = "200" ] && ok "mcp.devin.ai reachable (200)" || bad "mcp.devin.ai returned '$code' (network?)"
+if hermes mcp list 2>/dev/null | grep -q 'devin'; then
+  ok "devin MCP server registered"
+else
+  bad "devin MCP server not registered (run: hermes mcp add devin --url https://mcp.devin.ai/mcp --auth header)"
+fi
+ENVF="${LOCALAPPDATA:-$HOME/AppData/Local}/hermes/.env"; ENVF="${ENVF//\\//}"
+if grep -q '^MCP_DEVIN_API_KEY=' "$ENVF" 2>/dev/null; then
+  ok "MCP_DEVIN_API_KEY present in hermes .env"
+else
+  bad "MCP_DEVIN_API_KEY missing in $ENVF (add via: hermes mcp add devin --url https://mcp.devin.ai/mcp --auth header)"
+fi
+
 echo "== 4. reminders =="
 echo "  - after any CLI upgrade: sync version rows in docs/installation.md (§2 · §7 · §9)"
-echo "  - live smokes: say <AGENT>_SMOKE_OK (Devin quota-billed → devin doctor + dry-run instead)"
+echo "  - live smokes: say <AGENT>_SMOKE_OK (Devin cloud quota-billed → hermes mcp test devin; CLI → devin doctor + dry-run)"
 echo
 echo "PREFLIGHT: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

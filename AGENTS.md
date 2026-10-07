@@ -1,8 +1,8 @@
 # AGENTS.md — hermes-orchestrator
 
 This repo is the **Hermes Lead Orchestrator kit**: the canonical orchestrator prompt, task
-templates, a control-plane scaffold, and launch scripts used to run **Devin / Cline / OpenCode**
-as a verified multi-agent team under **Hermes** as Lead Orchestrator.
+templates, a control-plane scaffold, and launch scripts used to run **Devin (cloud MCP/API; CLI
+fallback) / Cline / OpenCode** as a verified multi-agent team under **Hermes** as Lead Orchestrator.
 
 ## For agent workers
 

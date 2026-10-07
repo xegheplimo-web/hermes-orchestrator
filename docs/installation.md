@@ -1,8 +1,8 @@
 # Installation — full setup guide
 
 Reconstructs the whole orchestration stack on a Windows machine: **Hermes as Lead Orchestrator**
-driving three CLI coding agents (**Devin = hard · Cline = medium · OpenCode = light**) with a live
-guard hook and a self-tested script kit.
+driving three coding agents (**Devin = hard — cloud via MCP/API, local CLI fallback · Cline = medium ·
+OpenCode = light**) with a live guard hook and a self-tested script kit.
 
 Verified end-to-end on the machine this kit was born on (2026-10-06; re-verified 2026-10-07 after CLI upgrades): every command below was
 executed, and the "expected" values are real observed output — a fresh install can be validated
@@ -14,7 +14,7 @@ line by line against this document.
 |---|---|---|---|
 | 1 | **Hermes Agent** (desktop, profile `default`) | Orchestrator: split · assign · verify · integrate · owns git | `%LOCALAPPDATA%\hermes` (`config.yaml` · `skills\` · `agent-hooks\`) |
 | 2 | **This kit repo** | Canonical prompt + docs + templates + scripts + control plane | `E:\hermes-orchestrator` |
-| 3 | **Devin CLI** | Expert worker — architecture, core logic, hard bugs, RE/bring-up | `%LOCALAPPDATA%\devin\cli\bin\devin.exe` |
+| 3 | **Devin** — cloud MCP/API (primary) + local CLI (fallback) | Expert worker — architecture, core logic, hard bugs, RE/bring-up | MCP server `devin` → `https://mcp.devin.ai/mcp` (key in `%LOCALAPPDATA%\hermes\.env`) · CLI `%LOCALAPPDATA%\devin\cli\bin\devin.exe` |
 | 4 | **Cline CLI** | Builder worker — features, API/UI, tests, build/run infra | npm global shim `%APPDATA%\npm\cline` |
 | 5 | **OpenCode CLI** | Worker — boilerplate, docs, unit tests, lint/typecheck | npm global shim `%APPDATA%\npm\opencode` |
 | 6 | **Skill `lead-orchestrator`** | The process playbook Hermes loads per round | `%LOCALAPPDATA%\hermes\skills\autonomous-ai-agents\lead-orchestrator\SKILL.md` |
@@ -32,7 +32,7 @@ Path conventions across this stack: projects live at `E:\<project>`; per-task wo
 - **Python 3.11+** — used by `scripts/doc-stats.py`. Check: `python --version`.
 - **Hermes Agent** installed and working (desktop app). Check: `hermes hooks doctor` runs.
 - Accounts / keys: a Cline account, an **opencode-go** API key, an **OpenCode Zen** credential,
-  a **Devin** account.
+  a **Devin** account with a **service-user API key** (Cognition app → Settings > Devin API).
 - Optional: GitHub CLI for push discipline — check `gh auth status`.
 
 ## 2. Install the agent CLIs
@@ -98,7 +98,40 @@ Smoke test:
 opencode run --model opencode/muse-spark-1.3-contributor-free --title smoke "say OPENCODE_SMOKE_OK"
 ```
 
-### 2.3 Devin CLI (hard worker)
+### 2.3 Devin (hard worker) — cloud lane primary + local CLI fallback
+
+#### Cloud — Devin MCP server (primary since 2026-10-08)
+
+1. **Service user + API key** — Cognition app → **Settings > Devin API > Service users**: provision a
+   service user (role Member+) and generate its key (`cog_…`, shown once). Org-scoped keys resolve
+   their organization automatically; enterprise keys also pass `X-Org-Id`.
+2. **Register the MCP server in Hermes** — one command; the key is pasted at a **masked prompt**
+   (never through chat or shell history):
+
+   ```bash
+   hermes mcp add devin --url https://mcp.devin.ai/mcp --auth header
+   # → Y (requires auth) → paste key (hidden) → enable all tools
+   # → then start a new session or run /reload-mcp
+   ```
+
+3. **Verify:**
+
+   ```bash
+   hermes mcp test devin    # expect: tool list returned (repo docs + session management)
+   hermes mcp list          # expect: devin   https://mcp.devin.ai/mcp   all   ✓ enabled
+   ```
+
+4. **REST fallback** (same key; handy for scripted polling outside Hermes):
+
+   ```bash
+   curl https://api.devin.ai/v3/self -H "Authorization: Bearer $DEVIN_API_KEY"   # expect 200
+   ```
+
+   Cloud sessions run server-side on GitHub-connected repos and are **quota-billed** — one
+   well-specified prompt per task; create → poll status/messages → take the branch/PR; for
+   local-only worktrees use the CLI lane below.
+
+#### Local — Devin CLI (fallback: local-only repos, cloud lane down)
 
 Install (official Cognition routes — macOS/Linux/WSL, Windows, Homebrew):
 
@@ -185,7 +218,7 @@ work — it fails open.
 
    ```bash
    hermes hooks doctor                      # expect: exists+executable ✓ · allowlisted ✓ · unchanged ✓ · runs clean ✓
-   bash scripts/agent-hooks/test-guard.sh   # expect: 16 pass, 0 fail   (verified 2026-10-06)
+   bash scripts/agent-hooks/test-guard.sh   # expect: 19 pass, 0 fail   (re-verified 2026-10-07)
    ```
 
 ### 3.3 Superpowers plugin (optional — quality methodology)
@@ -213,8 +246,8 @@ The smoke test boots a throwaway project in a temp dir and asserts every script 
 (bootstrap, worktree, launch dry-runs, doc-stats self-test).
 
 For a one-command §9 convention re-check — CLI versions + the three launch dry-runs + the key
-flags in the live CLIs — run `bash scripts/preflight.sh` (exit ≠ 0 = drift; run it after ANY
-CLI upgrade and before a round).
+flags in the live CLIs + the Devin cloud-lane checks (§3b: endpoint · MCP server · API key) —
+run `bash scripts/preflight.sh` (exit ≠ 0 = drift; run it after ANY CLI upgrade and before a round).
 
 ## 5. First orchestrated project (quickstart)
 
@@ -234,7 +267,8 @@ Then follow `docs/git-orchestration.md` for verify → merge → bookkeeping. He
 |---|---|
 | cline | `timeout 1500 cline -P opencode-go -m longcat-2.5-preview-free -t 1380 "$(cat <prompt>)"` |
 | opencode | `timeout 1500 opencode run --model opencode/muse-spark-1.3-contributor-free --title <task> "$(cat <prompt>)"` |
-| devin | `timeout 2400 devin --respect-workspace-trust false --permission-mode dangerous -p -- "$(cat <prompt>)"` |
+| devin (cloud, primary) | Hermes tool call — `mcp__devin__*` session tools: create → poll → fetch (setup §2.3) |
+| devin (local CLI) | `timeout 2400 devin --respect-workspace-trust false --permission-mode dangerous -p -- "$(cat <prompt>)"` |
 
 `scripts/launch-agent.sh` wraps exactly these (timeout + log + `EXIT=` marker); `--dry-run` prints
 the composed command. Operational rules learned live (details: `docs/agent-matrix.md`):
@@ -255,12 +289,14 @@ the composed command. Operational rules learned live (details: `docs/agent-matri
 | 1 | CLIs present | `cline --version && opencode --version && devin --version` | 3.0.68 · 1.18.35 · devin 3000.11.3 |
 | 2 | Cline smoke | `cline -P opencode-go -m longcat-2.5-preview-free "say CLINE_SMOKE_OK"` | `CLINE_SMOKE_OK` |
 | 3 | OpenCode smoke | `opencode run --model opencode/muse-spark-1.3-contributor-free --title smoke "say OPENCODE_SMOKE_OK"` | `OPENCODE_SMOKE_OK` |
-| 4 | Devin health | `devin doctor` | 2 passed, 0 failures (v3000.11.3) |
+| 4 | Devin health (local CLI) | `devin doctor` | 2 passed, 0 failures (v3000.11.3) |
+| 4b | Devin MCP server | `hermes mcp test devin` | tool list returned; `hermes mcp list` shows `devin ✓ enabled` |
+| 4c | Devin API self | `curl https://api.devin.ai/v3/self -H "Authorization: Bearer $DEVIN_API_KEY"` | 200 |
 | 5 | Hook registered | `hermes hooks doctor` | all checks green |
-| 6 | Hook behavior | `bash scripts/agent-hooks/test-guard.sh` | 16 pass / 0 fail |
+| 6 | Hook behavior | `bash scripts/agent-hooks/test-guard.sh` | 19 pass / 0 fail |
 | 7 | Kit scripts | `bash scripts/smoke-test.sh` | 43 passed / 0 failed |
 | 8 | Launch dry-runs | `bash scripts/launch-agent.sh <agent> <workdir> <prompt> --dry-run` | prints the verified command, no side effects |
-| 9 | One-command §9 re-check | `bash scripts/preflight.sh` | `PREFLIGHT: 11 passed, 0 failed` (verified 2026-10-07) |
+| 9 | One-command §9 re-check | `bash scripts/preflight.sh` | `PREFLIGHT: 14 passed, 0 failed` once the cloud lane is configured (the three §3b checks fail until `hermes mcp add devin …` is done) |
 
 ## 8. Troubleshooting
 
@@ -276,14 +312,17 @@ the composed command. Operational rules learned live (details: `docs/agent-matri
 | Cline 429 / "Model is unavailable" | Free-tier throttle / catalog drift | Stagger runs, respect cooldowns; re-check the live catalog; `longcat-2.5-preview-free` is the stable free pick |
 | `npm i -g <pkg>` fails with EPERM under `...\hermes\tools\node-*` | Bundled npm's default global prefix points into the Hermes tools dir | Install with an explicit prefix: `npm i -g <pkg> --prefix "$APPDATA/npm"` (same dir as the existing CLI shims), then re-check `<cli> --version` |
 | Devin update fails: `devin.exe` "being used by another process" | A running devin CLI session holds the exe | Wait for devin sessions to exit, re-run `irm https://cli.devin.ai/install.ps1 \| iex`, verify `devin --version` |
+| `hermes mcp test devin` → 401/403 | Wrong/rotated key; key missing in `.env`; enterprise key missing `X-Org-Id` | Re-run `hermes mcp add devin … --auth header` with a fresh `cog_…` key; enterprise: add `X-Org-Id` to the server headers in `config.yaml` |
+| Devin cloud session won't start | Service-user role lacks permission, or quota/billing issue | Check role (Member+) and billing at app.devin.ai |
 
-## 9. Machine inventory (verified 2026-10-06; re-verified 2026-10-07)
+## 9. Machine inventory (verified 2026-10-06; re-verified 2026-10-07; + Devin cloud lane 2026-10-08)
 
 | Item | Value |
 |---|---|
 | cline | 3.0.68 (npm global, `%APPDATA%\npm\cline`) |
 | opencode | 1.18.35 (npm global, `opencode-ai`; upgrade with `--prefix "$APPDATA/npm"`) |
-| devin | 3000.11.3 `9c803229faa4` (`%LOCALAPPDATA%\devin\cli\bin\devin.exe`) |
+| devin (local CLI) | 3000.11.3 `9c803229faa4` (`%LOCALAPPDATA%\devin\cli\bin\devin.exe`) |
+| devin (cloud) | MCP server `devin` → `https://mcp.devin.ai/mcp`; service-user key `MCP_DEVIN_API_KEY` in `%LOCALAPPDATA%\hermes\.env` (never in the repo) |
 | node / npm | v26.7.0 / 11.19.0 (Node bundled with Hermes) |
 | kit smoke test | 43 passed / 0 failed |
 | guard hook | kit mirror **identical** to live; 19/19 synthetic tests; re-approved 2026-10-07 after the read-only-query refinement |

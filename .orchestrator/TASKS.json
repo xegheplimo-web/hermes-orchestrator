@@ -138,6 +138,24 @@
       "verify": ["bash scripts/smoke-test.sh", "python scripts/doc-stats.py ."],
       "fail_count": 0,
       "notes": "Sếp chốt 2026-10-07: dùng bản ngắn (giữ luật quan trọng nhất); §1–§31 giữ nguyên làm tham chiếu. Sync vào skill + kit theo luật 'cập nhật skill liên quan, không tạo mới'."
+    },
+    {
+      "id": "T-112",
+      "title": "Devin lane → cloud (MCP/API) primary; CLI = local fallback — skill + kit sync",
+      "status": "done",
+      "agent": "hermes",
+      "scope": ["PROMPT.md", "README.md", "AGENTS.md", "docs/agent-matrix.md", "docs/installation.md", "scripts/preflight.sh", ".orchestrator/**", "skill lead-orchestrator", "skill devin-cli"],
+      "deliverables": [
+        "skill lead-orchestrator v1.3.0: roster row, §6 cloud pitfall block, §9 two-lane launch",
+        "skill devin-cli v1.1.0: cloud-sessions section (MCP/REST) + description updated",
+        "kit: PROMPT.md (§2 kênh thi hành + §3 routing) · agent-matrix (roster/pitfalls/launch) · installation.md (10 sections) · README · AGENTS",
+        "scripts/preflight.sh §3b: Devin cloud checks (endpoint · MCP server registered · API key present)",
+        "control plane: D-007 + this task + PROJECT_STATE; drift fix guard-test 16→19"
+      ],
+      "acceptance": ["preflight green (14 passed / 0 failed) once the Devin MCP lane is configured", "kit smoke green (43/43)", "skills lint clean"],
+      "verify": ["bash scripts/preflight.sh", "bash scripts/smoke-test.sh", "hermes mcp test devin (after the user-run add step)"],
+      "fail_count": 0,
+      "notes": "Sếp 2026-10-08: đổi Devin CLI -> Devin MCP/API trong quy trình. MCP add = user-run (key không qua chat); smoke cuối sau bước add. Kèm fix drift: guard-test count 16->19 trong installation.md."
     }
   ],
   "backlog": [

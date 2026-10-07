@@ -47,3 +47,17 @@ One entry per binding decision. Newest at the bottom. Frozen interfaces/names ch
   chỉ cho luật áp dụng rộng; không học từ phỏng đoán/chưa test; thay thế bài học đã sai) + **routing
   memory** (agent × task-type, cập nhật theo round) → skill `lead-orchestrator` (§0/§13) +
   `docs/agent-matrix.md`.
+
+## D-007 (2026-10-08) — Devin lane → cloud (MCP/API); CLI = local fallback (T-112)
+
+- Quy trình đổi kênh Devin: **Devin cloud qua MCP/API là kênh chính** — MCP server `devin`
+  (`https://mcp.devin.ai/mcp`, service-user key → `MCP_DEVIN_API_KEY` trong
+  `%LOCALAPPDATA%\hermes\.env`); Hermes lái session qua tools `mcp__devin__*` (create → poll →
+  branch/PR). **Devin CLI giữ nguyên làm local fallback** (repo local-only / cloud lane down).
+- Sync trong cùng round: skill `lead-orchestrator` v1.3.0 (§1 · §6 · §9) · skill `devin-cli`
+  v1.1.0 (cloud section) · `docs/installation.md` (§0/§1/§2.3/§4/§6/§7/§8/§9) · `docs/agent-matrix.md`
+  · `README.md` · `AGENTS.md` · `PROMPT.md` (§2/§3) · `scripts/preflight.sh` (§3b MCP checks).
+- Keys/tokens **never transit chat** (standing rule; rotate on any exposure). Cloud sessions are
+  quota-billed — no speculative runs. Setup step is user-run:
+  `hermes mcp add devin --url https://mcp.devin.ai/mcp --auth header`.
+- Fix kèm: guard-test rows trong `docs/installation.md` synced 16 → 19 (drift từ `8fceeac`).
