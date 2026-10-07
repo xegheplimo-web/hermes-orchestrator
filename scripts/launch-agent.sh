@@ -8,7 +8,7 @@
 # Defaults:
 #   models   : cline    -> longcat-2.5-preview-free (provider -P opencode-go)
 #              opencode -> opencode/muse-spark-1.3-contributor-free
-#   timeout  : cline/opencode 1500s, devin 2400s
+#   timeout  : cline/opencode 1500s, devin 2400s (cline's internal -t = TMO-120; override via CLINE_T env)
 #   log      : <workdir>/agent_logs/<title>.log  (title defaults to prompt file basename)
 # Exit code = the agent's own exit code. `EXIT=<code>` is appended to the log and printed.
 set -u
@@ -54,12 +54,14 @@ esac
 if [ -z "$TMO" ]; then
   case "$AGENT" in devin) TMO=2400 ;; *) TMO=1500 ;; esac
 fi
+CLINE_T="${CLINE_T:-$((TMO - 120))}"
+[ "$CLINE_T" -gt 0 ] 2>/dev/null || CLINE_T=1200
 
 case "$AGENT" in
   cline)
     [ -n "$MODEL" ] || MODEL="longcat-2.5-preview-free"
     BIN=cline
-    PROC="cline -P opencode-go -m $MODEL -t 1200"
+    PROC="cline -P opencode-go -m $MODEL -t $CLINE_T"
     ;;
   opencode)
     [ -n "$MODEL" ] || MODEL="opencode/muse-spark-1.3-contributor-free"
@@ -88,7 +90,7 @@ cd "$WORKDIR" || { echo "ERROR: cannot cd to $WORKDIR"; exit 2; }
 PROMPT="$(cat "$PFILE")"
 
 case "$AGENT" in
-  cline)    timeout "$TMO" cline -P opencode-go -m "$MODEL" -t 1200 "$PROMPT" > "$LOG" 2>&1; RC=$? ;;
+  cline)    timeout "$TMO" cline -P opencode-go -m "$MODEL" -t "$CLINE_T" "$PROMPT" > "$LOG" 2>&1; RC=$? ;;
   opencode) timeout "$TMO" opencode run --model "$MODEL" --title "$TITLE" "$PROMPT" > "$LOG" 2>&1; RC=$? ;;
   devin)    timeout "$TMO" devin --respect-workspace-trust false --permission-mode dangerous -p -- "$PROMPT" > "$LOG" 2>&1; RC=$? ;;
 esac
