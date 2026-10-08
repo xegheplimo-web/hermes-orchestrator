@@ -13,7 +13,7 @@
 - none
 
 ## Next up
-- <fill after Analyze + Split (PROMPT.md §4–§5)>
+- <fill after Analyze + Split (brief §4–§5 · docs/prompt-full-2026-10-06.md)>
 
 ## Blocked
 - none

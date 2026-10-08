@@ -1,6 +1,6 @@
 # Task {{TASK_ID}} — {{TITLE}}
 
-> Mandatory task format (PROMPT.md §7). The agent sees NOTHING of the conversation — this card
+> Mandatory task format (skill `lead-orchestrator` §3 · brief §7). The agent sees NOTHING of the conversation — this card
 > must be self-contained. Save as `_prompts/{{TASK_ID}}.md` and pass via `"$(cat file)"`.
 
 ## Objective

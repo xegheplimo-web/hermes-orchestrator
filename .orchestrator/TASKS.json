@@ -2,7 +2,7 @@
   "meta": {
     "project": "hermes-orchestrator",
     "updated": "2026-10-08",
-    "milestone": "M3 — Devin = CLI-only convention (D-008)",
+    "milestone": "M3 — CLI-only + prompt-ngắn architecture (D-008 · D-009)",
     "worktrees_root": "E:/hermes-orchestrator-worktrees",
     "prompts_root": "E:/hermes-orchestrator-worktrees/_prompts",
     "status_legend": ["queued", "dispatched", "in_progress", "verifying", "done", "blocked", "failed"]
@@ -194,6 +194,41 @@
       ],
       "fail_count": 0,
       "notes": "Sếp chốt 2026-10-08: Devin = Devin CLI, lane duy nhất; bỏ MCP/API kể cả fallback. Lane MCP chưa từng đăng ký nên preflight §3b cũ fail sẵn — giờ thay bằng gate thật (§3b doctor + §3c scan)."
+    },
+    {
+      "id": "T-114",
+      "title": "Prompt-ngắn architecture: Execution invariants + PROMPT.md ngắn hoá (D-009)",
+      "status": "done",
+      "agent": "hermes",
+      "scope": [
+        "PROMPT.md",
+        "docs/prompt-full-2026-10-06.md",
+        "README.md",
+        "AGENTS.md",
+        "docs/governance.md",
+        "scripts/bootstrap-project.sh",
+        "templates/**",
+        ".orchestrator/**",
+        "skill lead-orchestrator"
+      ],
+      "deliverables": [
+        "skill lead-orchestrator v1.4.6: block Execution invariants (Devin=CLI duy nhất; server-side/desktop lanes not execution lanes; rule thắng docs cũ — §3c enforce)",
+        "PROMPT.md → bản ngắn (role + mandate → load skill); full brief 2026-10-06 → docs/prompt-full-2026-10-06.md (archive)",
+        "refs §N đồng bộ: README (Layout + quickstart) · AGENTS · governance · bootstrap-project.sh · templates (decision-plan/final-report/task-card/control-plane)"
+      ],
+      "acceptance": [
+        "preflight green (gồm §3c)",
+        "smoke green (43/43)",
+        "skill banned-token scan 0",
+        "PROMPT.md giữ đúng mô hình prompt-ngắn"
+      ],
+      "verify": [
+        "bash scripts/preflight.sh",
+        "bash scripts/smoke-test.sh",
+        "bash scripts/agent-hooks/test-guard.sh"
+      ],
+      "fail_count": 0,
+      "notes": "Sếp chốt 2026-10-08: prompt chính rất ngắn → skill canonical; invariants đặt trong skill; không nhét 300 dòng quy tắc vào prompt."
     }
   ],
   "backlog": [

@@ -13,6 +13,6 @@ templates, a control-plane scaffold, and launch scripts used to run **Devin CLI 
 
 ## For Hermes (orchestrator)
 
-- Canonical prompt: `PROMPT.md`. Roster + routing: `docs/agent-matrix.md`.
+- Canonical prompt: `PROMPT.md` (short form; full brief archived `docs/prompt-full-2026-10-06.md`). Operating procedure: skill `lead-orchestrator`. Roster + routing: `docs/agent-matrix.md`.
 - State: `.orchestrator/PROJECT_STATE.md` · tasks: `.orchestrator/TASKS.json`.
 - Dispatch: `scripts/launch-agent.sh` (+ `scripts/new-task-worktree.sh` for isolation).

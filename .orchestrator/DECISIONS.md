@@ -76,3 +76,15 @@ One entry per binding decision. Newest at the bottom. Frozen interfaces/names ch
   cygpath) · smoke needle · retire file 1-click `Them-Devin-MCP.cmd`.
 - Gate mới: `preflight.sh` §3c quét banned tokens (MCP endpoint/key, tên cũ, fallback wording) trên
   kit + agent skills — drift nằm trong chữ nghĩa giờ FAIL preflight, không còn chỉ grep tay.
+
+## D-009 (2026-10-08) — Prompt chính = bản ngắn → skill canonical; Execution invariants trong skill (T-114)
+
+- Kiến trúc chốt (Sếp): SOUL/project prompt giữ vai trò + mục tiêu cấp cao; mọi quy tắc chi tiết sống
+  trong skill `lead-orchestrator` (canonical). Prompt không lặp lại quy tắc dài ("300 dòng").
+- `PROMPT.md` → bản ngắn (~15 dòng); bản đầy đủ 2026-10-06 chuyển sang `docs/prompt-full-2026-10-06.md`
+  (archive; các "§N" trong templates/docs trỏ về đây).
+- Skill `lead-orchestrator` v1.4.6: thêm block **Execution invariants** ngay đầu — "Devin" = Devin CLI ·
+  server-side/desktop Devin lanes không phải execution lane · rule thắng tài liệu cũ, stale ref phải sửa
+  (preflight §3c enforce). Wording tránh banned tokens để §3c không false-fail chính block chống drift.
+- Không thêm cơ chế mới: skill description + câu "quy trình chuẩn/orchestration" là trigger load; §3c gate
+  đã chặn drift chữ nghĩa.

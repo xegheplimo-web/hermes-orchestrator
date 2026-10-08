@@ -1,4 +1,4 @@
-# Final report (PROMPT.md §30)
+# Final report (brief §30 · docs/prompt-full-2026-10-06.md)
 
 > Use `STATUS: DONE` ONLY when every acceptance criterion and the final verification pass.
 > Anything else → `STATUS: NOT DONE` + the exact remaining items.

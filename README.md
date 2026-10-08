@@ -15,7 +15,8 @@ the Hermes skill `lead-orchestrator`.
 
 | Path | Purpose |
 |---|---|
-| `PROMPT.md` | Canonical system/project orchestrator prompt (Vietnamese). **§0 = core vận hành (bản ngắn — Lead Orchestrator + Technical Owner, Recon → … → Final Verify; Sếp chốt 2026-10-07)**; §1–§31 = bản chi tiết tham chiếu. |
+| `PROMPT.md` | Canonical system/project prompt (Vietnamese, **short form** — role + mandate → load skill `lead-orchestrator`). |
+| `docs/prompt-full-2026-10-06.md` | Archive: full 2026-10-06 orchestrator brief (§1–§31) — §-refs in templates/docs point here. |
 | `docs/agent-matrix.md` | Machine roster: exact CLIs/models, routing rules, escalation, per-agent pitfalls. |
 | `docs/gates.md` | Build gates + DONE definition + per-stack command sets + diff hygiene. |
 | `docs/git-orchestration.md` | Worktree-per-task flow; who may touch git; merge discipline. |
@@ -58,7 +59,7 @@ bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 43 passed / 0 fa
    Creates `E:/my-project/.orchestrator/` (rendered from templates), `agent_logs/`,
    `E:/my-project-worktrees/{_prompts,_logs}`, and git-inits if needed.
 
-2. **Split & assign** per `PROMPT.md` §5–§7: fill `.orchestrator/TASKS.json`, one task = one
+2. **Split & assign** per skill `lead-orchestrator` (§3 task card; brief §5–§7 archived): fill `.orchestrator/TASKS.json`, one task = one
    worktree = one branch.
 
 3. **Dispatch** a task:

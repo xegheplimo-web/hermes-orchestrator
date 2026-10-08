@@ -1,4 +1,4 @@
-# Orchestrator decision plan (PROMPT.md §28)
+# Orchestrator decision plan (brief §28 · docs/prompt-full-2026-10-06.md)
 
 > Emit this BEFORE executing any multi-task work; then execute.
 

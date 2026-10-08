@@ -106,7 +106,7 @@ echo "  control  : $PROJ/.orchestrator ($rendered new, $skipped skipped)"
 echo "  worktrees: $WT (prompts: $WT/_prompts, logs: $WT/_logs)"
 echo
 echo "Next steps:"
-echo "  1. Fill .orchestrator/TASKS.json (split per PROMPT.md §5; one task = one worktree)."
+echo "  1. Fill .orchestrator/TASKS.json (split per skill lead-orchestrator §3; one task = one worktree)."
 echo "  2. Create a task worktree: bash scripts/new-task-worktree.sh \"$PROJ\" \"$WT\" T-101 short-slug"
 echo "  3. Write the task card to: $WT/_prompts/T-101.md"
 echo "  4. Dispatch: bash scripts/launch-agent.sh <cline|opencode|devin> \"$WT/T-101\" \"$WT/_prompts/T-101.md\" --title T-101"

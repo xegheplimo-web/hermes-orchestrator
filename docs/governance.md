@@ -1,7 +1,7 @@
 # Governance v3 — permissions, maintenance lane, audit (2026-10-06)
 
 Adopted from an external proposal review, trimmed to stay consistent with the proven kit
-(see `PROMPT.md`, `docs/gates.md`, `docs/git-orchestration.md`). Scope: orchestrated project runs.
+(see `PROMPT.md` + skill `lead-orchestrator`, `docs/gates.md`, `docs/git-orchestration.md`). Scope: orchestrated project runs.
 
 ## 1. Permission tiers
 
