@@ -229,6 +229,33 @@
       ],
       "fail_count": 0,
       "notes": "Sếp chốt 2026-10-08: prompt chính rất ngắn → skill canonical; invariants đặt trong skill; không nhét 300 dòng quy tắc vào prompt."
+    },
+    {
+      "id": "T-115",
+      "title": "Consistency audit chuỗi skill→kit + §3c pattern coverage (MCP/API)",
+      "status": "done",
+      "agent": "hermes",
+      "scope": [
+        "scripts/preflight.sh",
+        "README.md",
+        ".orchestrator/**"
+      ],
+      "deliverables": [
+        "Audit 7 mắt xích (skill→PROMPT.md→agent-matrix→installation→launch-agent→preflight→README): launch form canonical khớp 5/5 nơi, roster khớp, 0 leftover form cũ '-p -- ', 0 cụm MCP/API trong kit",
+        "preflight §3c thêm pattern 'MCP/API' + 'cloud via MCP' (gate trước đó bỏ sót cụm theo đúng sweep list)",
+        "README: thêm row scripts/preflight.sh (table thiếu)"
+      ],
+      "acceptance": [
+        "preflight green 14/14 với 12 patterns",
+        "smoke green 43/43",
+        "kit scan 0 hit (gồm 2 pattern mới)"
+      ],
+      "verify": [
+        "bash scripts/preflight.sh",
+        "bash scripts/smoke-test.sh"
+      ],
+      "fail_count": 0,
+      "notes": "Sếp chốt 2026-10-08: audit nhất quán toàn chuỗi skill→kit; phát hiện §3c thiếu cụm 'MCP/API' so với sweep list."
     }
   ],
   "backlog": [

@@ -73,7 +73,7 @@ SCAN_ROOTS=("$HERE/..")
 [ -d "$SKILLS_AA" ] && SCAN_ROOTS+=("$SKILLS_AA")
 hits="$(grep -rInE -i \
   -e 'mcp__devin__' -e 'mcp\.devin\.ai' -e 'MCP_DEVIN_API_KEY' -e 'hermes mcp (test|add) devin' \
-  -e 'devin[-_ ]?mcp' -e 'devin cloud' -e 'cloud lane' -e 'REST v3' -e 'api\.devin' -e 'local fallback' \
+  -e 'devin[-_ ]?mcp' -e 'devin cloud' -e 'cloud lane' -e 'REST v3' -e 'api\.devin' -e 'local fallback' -e 'MCP/API' -e 'cloud via MCP' \
   --exclude='preflight.sh' --exclude-dir='.git' --exclude-dir='.orchestrator' --exclude-dir='node_modules' \
   "${SCAN_ROOTS[@]}" 2>/dev/null | head -20)"
 if [ -z "$hits" ]; then ok "no banned tokens in kit + agent skills"; else

@@ -32,6 +32,7 @@ the Hermes skill `lead-orchestrator`.
 | `scripts/new-task-worktree.sh` | Create `task/<id>-<slug>` worktree for a task. |
 | `scripts/launch-agent.sh` | Launch cline/opencode/devin (CLI lanes) on a prompt file: timeout + log + exit marker (`--dry-run`). |
 | `scripts/smoke-test.sh` | Self-test for all scripts (throwaway project in a temp dir), incl. the doc-stats self-test. |
+| `scripts/preflight.sh` | One-command §9 convention re-check: CLI versions + 3 launch dry-runs + key-flag greps + `devin doctor` + banned-token drift scan (§3b–§3c); exit ≠ 0 = drift. |
 | `scripts/doc-stats.py` | Documentation & roadmap statistics for a project: inventory, staleness vs HEAD, checklist progress, control-plane audit (`--json`, `--strict`). |
 | `scripts/agent-hooks/` | Guard hook `block-dangerous.sh` + 19 synthetic tests — mirror of the live hook at `%LOCALAPPDATA%\hermes\agent-hooks\`. |
 

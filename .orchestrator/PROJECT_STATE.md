@@ -21,6 +21,7 @@
 - 2026-10-08 — **T-112** Devin lane → cloud MCP/API (D-007): skill `lead-orchestrator` v1.3.0 (§1/§6/§9) + `devin-cli` v1.1.0; kit sync (PROMPT §2/§3 · agent-matrix · installation §0–§9 · README · AGENTS · preflight §3b); drift fix guard-test 16→19; gates re-run (see `VERIFICATION.md`).
 - 2026-10-08 — **T-113** Devin lane → CLI-only (D-008, đảo D-007): skill `lead-orchestrator` v1.4.5 + rename `devin-cli` v1.4.0 (từ `devin-mcp`); kit sweep (PROMPT · agent-matrix · installation · README · AGENTS · preflight §3c `devin doctor` + banned-token scan · launcher `--prompt-file`/cygpath · smoke); retire 1-click `Them-Devin-MCP.cmd`; gates re-run green (see `VERIFICATION.md`).
 - 2026-10-08 — **T-114** Prompt-ngắn architecture (D-009): `lead-orchestrator` v1.4.6 (Execution invariants block) · `PROMPT.md` → bản ngắn + `docs/prompt-full-2026-10-06.md` (archive) · refs đồng bộ (README · AGENTS · governance · bootstrap · templates) · gates re-run green.
+- 2026-10-08 — **T-115** Consistency audit chuỗi skill→kit (7 mắt xích): §3c thêm pattern `MCP/API` + `cloud via MCP`; README thêm row `scripts/preflight.sh`; audit 5/5 launch form canonical, 0 drift còn lại.
 
 ## In progress
 - none
