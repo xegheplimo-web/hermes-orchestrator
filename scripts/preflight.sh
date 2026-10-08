@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # preflight.sh — one-command §9 convention check for the orchestrator kit.
 # Checks: agent CLIs on PATH + versions · launch-agent.sh dry-runs still match the
-# §9 launch conventions · key flags still present in the live CLIs · Devin cloud lane
-# (MCP endpoint reachable · server registered · API key present).
+# §9 launch conventions · key flags still present in the live CLIs · Devin CLI health
+# (devin doctor) · banned-token drift scan — retired Devin lanes must not reappear.
 # Read-only (writes only to a temp dir). Exit 0 = all green.
 # Any FAIL = drift → resync §9 (docs/installation.md + skill lead-orchestrator §9),
 # then re-run this script. Run after ANY CLI upgrade and before a round.
@@ -39,7 +39,7 @@ dr() { # dr <agent> <needle>...
 }
 dr cline    "-P opencode-go" "-m longcat-2.5-preview-free" "-t 1380" "timeout 1500"
 dr opencode "opencode run --model opencode/muse-spark-1.3-contributor-free" "--title" "timeout 1500"
-dr devin    "devin --respect-workspace-trust false --permission-mode dangerous -p --" "timeout 2400"
+dr devin    "devin --respect-workspace-trust false --permission-mode dangerous -p --prompt-file" "timeout 2400"
 
 echo "== 3. key flags still exist in live CLIs =="
 flag() { # flag <desc> <needle> <cmd...>
@@ -58,25 +58,31 @@ flag "opencode run help: --title" "--title" opencode run --help
 flag "opencode run help: --variant" "--variant" opencode run --help
 flag "devin help: --permission-mode" "--permission-mode" devin --help
 flag "devin help: --respect-workspace-trust" "--respect-workspace-trust" devin --help
+flag "devin help: --prompt-file" "--prompt-file" devin --help
 
-echo "== 3b. Devin cloud lane (MCP/API) =="
-code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://mcp.devin.ai/ 2>/dev/null)"
-[ "$code" = "200" ] && ok "mcp.devin.ai reachable (200)" || bad "mcp.devin.ai returned '$code' (network?)"
-if hermes mcp list 2>/dev/null | grep -q 'devin'; then
-  ok "devin MCP server registered"
+echo "== 3b. Devin CLI health =="
+if timeout 60 devin doctor >"$TMP/doctor.out" 2>&1; then
+  ok "devin doctor clean — $(tail -1 "$TMP/doctor.out" | tr -d '\r')"
 else
-  bad "devin MCP server not registered (run: hermes mcp add devin --url https://mcp.devin.ai/mcp --auth header)"
+  bad "devin doctor failed (exit != 0)"; sed 's/^/        /' "$TMP/doctor.out" | tail -5
 fi
-ENVF="${LOCALAPPDATA:-$HOME/AppData/Local}/hermes/.env"; ENVF="${ENVF//\\//}"
-if grep -q '^MCP_DEVIN_API_KEY=' "$ENVF" 2>/dev/null; then
-  ok "MCP_DEVIN_API_KEY present in hermes .env"
-else
-  bad "MCP_DEVIN_API_KEY missing in $ENVF (add via: hermes mcp add devin --url https://mcp.devin.ai/mcp --auth header)"
+
+echo "== 3c. banned-token drift scan (retired Devin lanes must stay gone) =="
+SKILLS_AA="${LOCALAPPDATA:-$HOME/AppData/Local}/hermes/skills/autonomous-ai-agents"
+SCAN_ROOTS=("$HERE/..")
+[ -d "$SKILLS_AA" ] && SCAN_ROOTS+=("$SKILLS_AA")
+hits="$(grep -rInE -i \
+  -e 'mcp__devin__' -e 'mcp\.devin\.ai' -e 'MCP_DEVIN_API_KEY' -e 'hermes mcp (test|add) devin' \
+  -e 'devin[-_ ]?mcp' -e 'devin cloud' -e 'cloud lane' -e 'REST v3' -e 'api\.devin' -e 'local fallback' \
+  --exclude='preflight.sh' --exclude-dir='.git' --exclude-dir='.orchestrator' --exclude-dir='node_modules' \
+  "${SCAN_ROOTS[@]}" 2>/dev/null | head -20)"
+if [ -z "$hits" ]; then ok "no banned tokens in kit + agent skills"; else
+  bad "banned tokens found (retired-lane drift):"; printf '%s\n' "$hits" | sed 's/^/        /'
 fi
 
 echo "== 4. reminders =="
 echo "  - after any CLI upgrade: sync version rows in docs/installation.md (§2 · §7 · §9)"
-echo "  - live smokes: say <AGENT>_SMOKE_OK (Devin cloud quota-billed → hermes mcp test devin; CLI → devin doctor + dry-run)"
+echo "  - live smokes: say <AGENT>_SMOKE_OK (Devin CLI is quota-billed → devin doctor + dry-run instead)"
 echo
 echo "PREFLIGHT: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

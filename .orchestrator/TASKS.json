@@ -1,8 +1,8 @@
 {
   "meta": {
     "project": "hermes-orchestrator",
-    "updated": "2026-10-07",
-    "milestone": "M1 — published: public GitHub remote + full installation guide",
+    "updated": "2026-10-08",
+    "milestone": "M3 — Devin = CLI-only convention (D-008)",
     "worktrees_root": "E:/hermes-orchestrator-worktrees",
     "prompts_root": "E:/hermes-orchestrator-worktrees/_prompts",
     "status_legend": ["queued", "dispatched", "in_progress", "verifying", "done", "blocked", "failed"]
@@ -156,6 +156,44 @@
       "verify": ["bash scripts/preflight.sh", "bash scripts/smoke-test.sh", "hermes mcp test devin (after the user-run add step)"],
       "fail_count": 0,
       "notes": "Sếp 2026-10-08: đổi Devin CLI -> Devin MCP/API trong quy trình. MCP add = user-run (key không qua chat); smoke cuối sau bước add. Kèm fix drift: guard-test count 16->19 trong installation.md."
+    },
+    {
+      "id": "T-113",
+      "title": "Devin lane → CLI-only convention (đảo D-007) — skill + kit sweep",
+      "status": "done",
+      "agent": "hermes",
+      "scope": [
+        "PROMPT.md",
+        "README.md",
+        "AGENTS.md",
+        "docs/agent-matrix.md",
+        "docs/installation.md",
+        "scripts/preflight.sh",
+        "scripts/launch-agent.sh",
+        "scripts/smoke-test.sh",
+        ".orchestrator/**",
+        "skill lead-orchestrator",
+        "skill devin-cli"
+      ],
+      "deliverables": [
+        "skill lead-orchestrator v1.4.5: §1 roster CLI-only · §6 bỏ block cloud, heading CLI · §9 single canonical snippet (-p --prompt-file) · §9 sweep note (§3c scan)",
+        "skill devin-cli v1.4.0: rename về (từ tên thời D-007); content CLI-only; related_skills refs synced (5 skills)",
+        "kit: PROMPT §0/§2/§3 · agent-matrix · installation (§0–§9) · README · AGENTS — hết nhắc MCP/cloud lane",
+        "scripts: launch-agent.sh (--prompt-file + cygpath -m) · preflight §3b doctor + §3c banned-token scan · smoke needle",
+        "retire Desktop 1-click Them-Devin-MCP.cmd → hermes archive; control plane D-008 + VERIFICATION row"
+      ],
+      "acceptance": [
+        "preflight green (all sections incl. §3c scan)",
+        "kit smoke green (43/43)",
+        "banned-token sweep clean (kit + agent skills)"
+      ],
+      "verify": [
+        "bash scripts/preflight.sh",
+        "bash scripts/smoke-test.sh",
+        "bash scripts/agent-hooks/test-guard.sh"
+      ],
+      "fail_count": 0,
+      "notes": "Sếp chốt 2026-10-08: Devin = Devin CLI, lane duy nhất; bỏ MCP/API kể cả fallback. Lane MCP chưa từng đăng ký nên preflight §3b cũ fail sẵn — giờ thay bằng gate thật (§3b doctor + §3c scan)."
     }
   ],
   "backlog": [

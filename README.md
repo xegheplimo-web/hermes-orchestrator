@@ -1,6 +1,6 @@
 # Hermes — Lead Orchestrator kit
 
-A reusable control tower for running **Devin (cloud MCP/API; local CLI fallback) + Cline + OpenCode** as one verified software
+A reusable control tower for running **Devin CLI + Cline + OpenCode** as one verified software
 team under **Hermes as Lead Orchestrator**: Analyze → Split → Assign → Execute → Verify →
 Fix/Reassign → Integrate → Final Verify. Core law: *an agent saying "done" is not DONE* — only
 orchestrator verification makes DONE.
@@ -29,7 +29,7 @@ the Hermes skill `lead-orchestrator`.
 | `templates/control-plane/` | Starter `.orchestrator/` files for a new project (`{{PROJECT_NAME}}`, `{{DATE}}`). |
 | `scripts/bootstrap-project.sh` | Scaffold a new orchestrated project (control plane + agent work dirs + .gitignore). |
 | `scripts/new-task-worktree.sh` | Create `task/<id>-<slug>` worktree for a task. |
-| `scripts/launch-agent.sh` | Launch cline/opencode/devin (local CLI lanes) on a prompt file: timeout + log + exit marker (`--dry-run`). Devin's **cloud** lane runs via Hermes `mcp__devin__*` tools — see `docs/installation.md` §2.3. |
+| `scripts/launch-agent.sh` | Launch cline/opencode/devin (CLI lanes) on a prompt file: timeout + log + exit marker (`--dry-run`). |
 | `scripts/smoke-test.sh` | Self-test for all scripts (throwaway project in a temp dir), incl. the doc-stats self-test. |
 | `scripts/doc-stats.py` | Documentation & roadmap statistics for a project: inventory, staleness vs HEAD, checklist progress, control-plane audit (`--json`, `--strict`). |
 | `scripts/agent-hooks/` | Guard hook `block-dangerous.sh` + 19 synthetic tests — mirror of the live hook at `%LOCALAPPDATA%\hermes\agent-hooks\`. |
@@ -42,7 +42,6 @@ Short path:
 
 ```bash
 npm install -g cline opencode-ai          # Devin CLI: official installer from cli.devin.ai (see the guide)
-hermes mcp add devin --url https://mcp.devin.ai/mcp --auth header   # paste the service-user key at the masked prompt
 cline auth -p opencode-go -k <KEY> -m longcat-2.5-preview-free
 git clone https://github.com/xegheplimo-web/hermes-orchestrator E:/hermes-orchestrator
 bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 43 passed / 0 failed

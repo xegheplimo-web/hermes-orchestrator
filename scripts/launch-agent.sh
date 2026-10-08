@@ -11,6 +11,7 @@
 #   timeout  : cline/opencode 1500s, devin 2400s (cline's internal -t = TMO-120; override via CLINE_T env)
 #   log      : <workdir>/agent_logs/<title>.log  (title defaults to prompt file basename)
 # Exit code = the agent's own exit code. `EXIT=<code>` is appended to the log and printed.
+# devin runs non-interactive print mode: `-p --prompt-file <FILE>` (path converted for the native binary).
 set -u
 
 usage() {
@@ -49,6 +50,12 @@ esac
 [ -d "$WORKDIR" ] || { echo "ERROR: workdir not found: $WORKDIR"; exit 2; }
 [ -f "$PFILE" ] || { echo "ERROR: prompt file not found: $PFILE"; exit 2; }
 
+# devin.exe is a native Windows binary — give --prompt-file a Windows-style path (cygpath -m)
+DPFILE="$PFILE"
+if command -v cygpath >/dev/null 2>&1; then
+  DPFILE="$(cygpath -m "$PFILE" 2>/dev/null || printf '%s' "$PFILE")"
+fi
+
 [ -n "$TITLE" ] || { TITLE="$(basename "$PFILE")"; TITLE="${TITLE%.*}"; }
 [ -n "$LOG" ] || LOG="$WORKDIR/agent_logs/$TITLE.log"
 if [ -z "$TMO" ]; then
@@ -70,14 +77,18 @@ case "$AGENT" in
     ;;
   devin)
     BIN=devin
-    PROC="devin --respect-workspace-trust false --permission-mode dangerous -p --"
+    PROC="devin --respect-workspace-trust false --permission-mode dangerous -p --prompt-file"
     ;;
 esac
 
 if [ "$DRY" -eq 1 ]; then
   echo "DRY-RUN ($AGENT)"
   echo "  cd $WORKDIR"
-  echo "  timeout $TMO $PROC \"\$(cat $PFILE)\" > $LOG 2>&1"
+  if [ "$AGENT" = devin ]; then
+    echo "  timeout $TMO $PROC $DPFILE > $LOG 2>&1"
+  else
+    echo "  timeout $TMO $PROC \"\$(cat $PFILE)\" > $LOG 2>&1"
+  fi
   echo "  # then: echo \"EXIT=\$?\" >> $LOG"
   exit 0
 fi
@@ -92,7 +103,7 @@ PROMPT="$(cat "$PFILE")"
 case "$AGENT" in
   cline)    timeout "$TMO" cline -P opencode-go -m "$MODEL" -t "$CLINE_T" "$PROMPT" > "$LOG" 2>&1; RC=$? ;;
   opencode) timeout "$TMO" opencode run --model "$MODEL" --title "$TITLE" "$PROMPT" > "$LOG" 2>&1; RC=$? ;;
-  devin)    timeout "$TMO" devin --respect-workspace-trust false --permission-mode dangerous -p -- "$PROMPT" > "$LOG" 2>&1; RC=$? ;;
+  devin)    timeout "$TMO" devin --respect-workspace-trust false --permission-mode dangerous -p --prompt-file "$DPFILE" > "$LOG" 2>&1; RC=$? ;;
 esac
 
 echo "EXIT=$RC" | tee -a "$LOG"

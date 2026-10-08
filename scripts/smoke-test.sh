@@ -72,7 +72,7 @@ chk_contains "dry-run opencode shows verified command" "opencode run --model ope
 
 OUT="$(bash "$HERE/launch-agent.sh" devin "$WT/T-101" "$WT/_prompts/T-101.md" --title T-101 --dry-run 2>&1)"; RC=$?
 [ "$RC" -eq 0 ] && ok "dry-run devin exits 0" || bad "dry-run devin exits 0 (rc=$RC)"
-chk_contains "dry-run devin shows dangerous mode" "devin --respect-workspace-trust false --permission-mode dangerous" "$OUT"
+chk_contains "dry-run devin shows canonical form" "devin --respect-workspace-trust false --permission-mode dangerous -p --prompt-file" "$OUT"
 
 chk "dry-run created no log" test ! -f "$WT/T-101/agent_logs/T-101.log"
 

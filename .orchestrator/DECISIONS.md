@@ -61,3 +61,18 @@ One entry per binding decision. Newest at the bottom. Frozen interfaces/names ch
   quota-billed — no speculative runs. Setup step is user-run:
   `hermes mcp add devin --url https://mcp.devin.ai/mcp --auth header`.
 - Fix kèm: guard-test rows trong `docs/installation.md` synced 16 → 19 (drift từ `8fceeac`).
+
+## D-008 (2026-10-08) — Devin lane chốt về CLI-only; bỏ lane MCP/API (đảo D-007) (T-113)
+
+- Convention: **Devin = Devin CLI — lane duy nhất** (hard worker). Bỏ hẳn lane MCP/API (server MCP,
+  REST, key `.env`) và mọi nhắc kiểu fallback/cloud trong execution convention — không giữ kể cả làm
+  dự phòng. Devin Desktop là app của Sếp — Hermes không đụng vào (không kill / không cấu hình).
+- Lý do: lane MCP **chưa từng được đăng ký** (bước add treo từ D-007) → convention mô tả một lane
+  không tồn tại; một lane duy nhất = hết split-brain giữa skill / kit docs / launcher / preflight.
+  Canonical form: `devin --respect-workspace-trust false --permission-mode dangerous -p --prompt-file <file>`.
+- Sync (T-113): skill `lead-orchestrator` v1.4.5 (§1 · §6 · §9) · skill `devin-cli` v1.4.0 (rename về
+  từ tên thời D-007 + content CLI-only) · kit: PROMPT · agent-matrix · installation (§0–§9) · README ·
+  AGENTS · preflight (§3b `devin doctor` + §3c banned-token drift scan) · launcher (`--prompt-file` +
+  cygpath) · smoke needle · retire file 1-click `Them-Devin-MCP.cmd`.
+- Gate mới: `preflight.sh` §3c quét banned tokens (MCP endpoint/key, tên cũ, fallback wording) trên
+  kit + agent skills — drift nằm trong chữ nghĩa giờ FAIL preflight, không còn chỉ grep tay.
