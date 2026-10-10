@@ -50,7 +50,10 @@ Per round: record agent × task-type × outcome (+ failure mode, wall time) in t
 
 - **Devin — CLI**: print mode cannot answer permission prompts — needs `--permission-mode dangerous` +
   `--respect-workspace-trust false` for out-of-workspace reads. Exit 0 ≠ success (verify the
-  artifact). Leaves `.serena/` in the workspace (gitignored here). **Kill by path, never by name** —
+  artifact). Leaves `.serena/` in the workspace (gitignored here). **Cards must forbid `.devin/**`
+  writes** — ForceAsk even under `dangerous`: print mode rejects → run dies mid-flight (pending
+  parallel writes cancelled, exit 0). Resume: `devin ... -c -p --prompt-file <follow-up>`.
+  **Kill by path, never by name** —
   `Get-Process Devin` also matches the user's Devin DESKTOP app (`%LOCALAPPDATA%\Programs\Devin`,
   ~15 Electron processes, launched from explorer); CLI processes live under `%LOCALAPPDATA%\devin\cli\`
   — match the path when stopping.
