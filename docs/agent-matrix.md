@@ -24,7 +24,7 @@ HERMES — Lead Orchestrator (split · assign · verify · integrate · git)
 | Orchestration, verification, integration, git | **Hermes (self)** | — | split, prompts, verify ALL artifacts/claims, fix, integrate, final gate |
 
 Never assign a strong agent to a light task; free models first.
-Extended evidence (aoe-native-agent program, Oct 2026): Devin 8/8 first-try (incl. dynamic game bring-up T-702 — DirectDraw fail → windowed pivot, CD-check → MP-solo pivot); Cline 4/4 (incl. T-801: provider died pre-commit → Hermes completed the commit after re-verification); OpenCode 2/2 (write-first when it over-explores). 0 escalations needed.
+Extended evidence (aoe-native-agent program, Oct 2026): Devin 8/8 first-try (incl. dynamic game bring-up T-702 — DirectDraw fail → windowed pivot, CD-check → MP-solo pivot); Cline 4/4 (incl. T-801: provider died pre-commit → Hermes completed the commit after re-verification); OpenCode 3/3 (3rd: freqtrade-kit D1 — API-adaptation fix + regression test, card-in-file, default model, first-pass ~156s, tree-diff verified). 0 escalations needed.
 
 ## Routing rules (quick)
 
@@ -42,7 +42,7 @@ Extended evidence (aoe-native-agent program, Oct 2026): Devin 8/8 first-try (inc
 |---|---|---|
 | Devin | architecture · core logic · RE / live bring-up · refactor · hard bugs with unknown cause (8/8 first-try — aoe program) | reserve for real difficulty |
 | Cline | medium features · API/UI · docs · build+run infra (4/4 — aoe program) | long rewrite-from-corruption stalls without writing (28' live) → send to Devin |
-| OpenCode | boilerplate · unit tests · docs · review/cleanup (2/2 — aoe program) | over-explores on fuzzy tasks → give a write-first instruction |
+| OpenCode | boilerplate · unit tests · docs · review/cleanup · small isolated defect fixes (3/3 — aoe + kit D1) | over-explores on fuzzy tasks → give a write-first instruction |
 
 Per round: record agent × task-type × outcome (+ failure mode, wall time) in the round ledger; consult this table before every assignment; update it at DONE. The table is the assignment ground truth — new evidence lands here.
 
