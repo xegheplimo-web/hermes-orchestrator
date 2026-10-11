@@ -8,6 +8,7 @@
 **M1 — published** (2026-10-06): public GitHub remote live + full installation guide (`docs/installation.md`) + README install section; self-test re-verified green (42/42 — re-verified again 2026-10-07 after CLI upgrades).
 **M2 — Devin cloud lane** (2026-10-08 AM): D-007 adopted (MCP/API primary) — **reverted the same day via D-008**; the MCP add step was never run (lane chưa từng được đăng ký).
 **M3 — Devin = CLI-only + prompt-ngắn architecture** (2026-10-08): D-008 đảo D-007 (bỏ lane MCP/API khỏi skill + kit) · D-009: prompt chính = bản ngắn → skill canonical (`PROMPT.md` ngắn hoá, full brief archive) · `lead-orchestrator` v1.4.6 (+ Execution invariants) · `devin-cli` v1.4.0 · preflight §3c drift scan; gates re-run green (see `VERIFICATION.md`).
+**M4 — Post-Run Learning Loop (Quality × Speed)** (2026-10-11): D-010 — spec Sếp canonized vào `docs/post-run-learning-loop.md` (+Kit mapping) · skill `lead-orchestrator` **v1.6.0** (§22 rewrite + §23 cross-ref) · refs đồng bộ (README · AGENTS · governance); §2 invariants reword "Devin via MCP" (§3c bắt drift); gates re-run green (see `VERIFICATION.md`).
 
 ## Completed
 - 2026-10-06 — **T-001** kit bootstrap: `PROMPT.md`, `docs/`, `templates/`, `scripts/`; smoke test PASS (see `VERIFICATION.md`); initial commit on `main`.
@@ -22,6 +23,7 @@
 - 2026-10-08 — **T-113** Devin lane → CLI-only (D-008, đảo D-007): skill `lead-orchestrator` v1.4.5 + rename `devin-cli` v1.4.0 (từ `devin-mcp`); kit sweep (PROMPT · agent-matrix · installation · README · AGENTS · preflight §3c `devin doctor` + banned-token scan · launcher `--prompt-file`/cygpath · smoke); retire 1-click `Them-Devin-MCP.cmd`; gates re-run green (see `VERIFICATION.md`).
 - 2026-10-08 — **T-114** Prompt-ngắn architecture (D-009): `lead-orchestrator` v1.4.6 (Execution invariants block) · `PROMPT.md` → bản ngắn + `docs/prompt-full-2026-10-06.md` (archive) · refs đồng bộ (README · AGENTS · governance · bootstrap · templates) · gates re-run green.
 - 2026-10-08 — **T-115** Consistency audit chuỗi skill→kit (7 mắt xích): §3c thêm pattern `MCP/API` + `cloud via MCP`; README thêm row `scripts/preflight.sh`; audit 5/5 launch form canonical, 0 drift còn lại.
+- 2026-10-11 — **T-116** Post-Run Learning Loop (D-010): `docs/post-run-learning-loop.md` (spec giữ nguyên + Kit mapping; xoá file drop ở root) · `lead-orchestrator` **v1.6.0** (§22 rewrite — Q×S invariant · admission gate · mechanism ladder · Q/S classification; §23 cross-ref) · lessons: memory-`replace` = whole-entry → `hermes-self-upgrade`; pitfall doc-drop-in-repo → `capability-adoption`; loop pointer → `multi-agent-orchestration` · ref hygiene archived-skill: đã sạch (session song song 46811d sửa local-place-scan/embedded — khớp kế hoạch, không stack) · gates re-run green (see `VERIFICATION.md`).
 
 ## In progress
 - none
@@ -35,4 +37,4 @@
 - none
 
 ## Key decisions (see DECISIONS.md)
-- **D-001** kit created · **D-002** `PROMPT.md` is the canonical prompt · **D-003** agents write files, Hermes owns git · **D-004** repo published public on GitHub (Hermes owns push) · **D-005** PR review loop adopted (zero unanswered review comments before DONE) · **D-006** §0 core vận hành + routing memory (2026-10-07) · **D-007** Devin lane → cloud MCP/API (2026-10-08 · reversed same day) · **D-008** Devin = CLI-only — single lane, no MCP/API (đảo D-007) (2026-10-08).
+- **D-001** kit created · **D-002** `PROMPT.md` is the canonical prompt · **D-003** agents write files, Hermes owns git · **D-004** repo published public on GitHub (Hermes owns push) · **D-005** PR review loop adopted (zero unanswered review comments before DONE) · **D-006** §0 core vận hành + routing memory (2026-10-07) · **D-007** Devin lane → cloud MCP/API (2026-10-08 · reversed same day) · **D-008** Devin = CLI-only — single lane, no MCP/API (đảo D-007) (2026-10-08) · **D-009** prompt chính = bản ngắn → skill canonical; Execution invariants (2026-10-08) · **D-010** Post-Run Learning Loop — Quality × Speed (2026-10-11).

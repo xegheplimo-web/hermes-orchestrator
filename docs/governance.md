@@ -50,6 +50,7 @@ between rounds only — never while agent CLIs are working.
   over-expensive assignments, repeated bugs, slow commands, broken skills/plugins.
 - Deep audit may adjust **routing rules / skills / prompts only** — never core. Routing changes come
   from data, not vibes (e.g. "UI task: OpenCode 48% → Cline 91%" ⇒ reroute).
+- **Post-Run Learning Loop (Quality × Speed)** — `docs/post-run-learning-loop.md` (D-010): the selective learning pass executed at every task/wave close; feeds the owning skills + routing memory (`docs/agent-matrix.md`); a verified quality drop is never an accepted optimization.
 
 ## 4. Result contract
 

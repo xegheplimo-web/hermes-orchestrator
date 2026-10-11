@@ -1,8 +1,8 @@
 {
   "meta": {
     "project": "hermes-orchestrator",
-    "updated": "2026-10-08",
-    "milestone": "M3 — CLI-only + prompt-ngắn architecture (D-008 · D-009)",
+    "updated": "2026-10-11",
+    "milestone": "M4 — Post-Run Learning Loop (D-010)",
     "worktrees_root": "E:/hermes-orchestrator-worktrees",
     "prompts_root": "E:/hermes-orchestrator-worktrees/_prompts",
     "status_legend": ["queued", "dispatched", "in_progress", "verifying", "done", "blocked", "failed"]
@@ -256,6 +256,26 @@
       ],
       "fail_count": 0,
       "notes": "Sếp chốt 2026-10-08: audit nhất quán toàn chuỗi skill→kit; phát hiện §3c thiếu cụm 'MCP/API' so với sweep list."
+    },
+    {
+      "id": "T-116",
+      "title": "Adopt Post-Run Learning Loop (Quality × Speed) — canonical learning procedure (D-010)",
+      "status": "done",
+      "agent": "hermes",
+      "acceptance": [
+        "spec giữ nguyên văn, format sạch + Kit mapping; file drop ở root đã xoá",
+        "lead-orchestrator v1.6.0: §22 rewrite + §23 cross-ref; banned-token scan sạch",
+        "gates green: preflight 14/14 · smoke 43/43 · guard 19/19 · doc-stats 0 warnings",
+        "push verified via ls-remote"
+      ],
+      "verify": [
+        "bash scripts/preflight.sh",
+        "bash scripts/smoke-test.sh",
+        "bash scripts/agent-hooks/test-guard.sh",
+        "python scripts/doc-stats.py ."
+      ],
+      "fail_count": 0,
+      "notes": "Sếp 2026-10-11: spec thả untracked vào root kit → canonize 1 bản (docs/post-run-learning-loop.md), thay §22 cũ (replace, không stack); lesson memory-replace=whole-entry → hermes-self-upgrade; §3c bắt drift câu cấm ('Devin MCP', §2 invariants) → reword 'Devin via MCP'; session song song 46811d sửa trùng refs 2 skill khác — kết quả khớp, không stack."
     }
   ],
   "backlog": [

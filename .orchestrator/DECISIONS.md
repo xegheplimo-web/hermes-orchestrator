@@ -88,3 +88,17 @@ One entry per binding decision. Newest at the bottom. Frozen interfaces/names ch
   (preflight §3c enforce). Wording tránh banned tokens để §3c không false-fail chính block chống drift.
 - Không thêm cơ chế mới: skill description + câu "quy trình chuẩn/orchestration" là trigger load; §3c gate
   đã chặn drift chữ nghĩa.
+
+## D-010 (2026-10-11) — Post-Run Learning Loop — Quality × Speed → canonical (T-116)
+
+- Spec Sếp ("Post-Run Learning Loop — Quality × Speed") = loop chuẩn: sau mỗi task/wave có ý nghĩa →
+  selective learning pass trên evidence thật: evidence capture → root-cause classification →
+  candidate lesson → admission gate (evidence · reuse · actionability · quality · speed) →
+  mechanism-over-prose (test → verifier → guard → preflight → CI gate → rule) → destination hẹp nhất
+  (project → owning skill → lead-orchestrator → memory) → Q/S classification (mọi Q↓ = REJECT).
+- Canonical doc: `docs/post-run-learning-loop.md` (giữ nguyên văn spec, chỉ sửa format + Kit mapping);
+  bản vận hành gọn: skill `lead-orchestrator` **v1.6.0** §22–§23 — §22 cũ được REPLACE (không stack).
+  Routing evidence tiếp tục tích ở `docs/agent-matrix.md` → Routing memory.
+- Kèm trong vòng: §3c gate bắt drift `Devin MCP` trong §2 Execution invariants (câu cấm chứa token
+  cấm → gate tự fail) → reword `Devin via MCP`; bài học: wording của rule chống drift cũng phải
+  tránh token (xem VERIFICATION T-116).

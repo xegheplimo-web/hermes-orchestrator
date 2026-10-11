@@ -21,6 +21,7 @@ the Hermes skill `lead-orchestrator`.
 | `docs/gates.md` | Build gates + DONE definition + per-stack command sets + diff hygiene. |
 | `docs/git-orchestration.md` | Worktree-per-task flow; who may touch git; merge discipline. |
 | `docs/governance.md` | Governance v3: permission tiers (AUTO/GATED/BLOCKED), maintenance lane, audit cadence, result contract, live guard hook. |
+| `docs/post-run-learning-loop.md` | Post-Run Learning Loop — Quality × Speed (D-010, 2026-10-11): the selective learning pass run at every task/wave close — evidence capture, admission gate, mechanism-over-prose, Q/S classification; executed via skill `lead-orchestrator` §22. |
 | `docs/installation.md` | Full installation & setup guide — prerequisites, agent CLIs, provider auth, skill + guard hook, kit self-test, verification checklist (verified commands + expected outputs). |
 | `templates/task-card.md` | Mandatory task format (prompt §7). |
 | `templates/decision-plan.md` | Pre-execution plan format (§28). |
