@@ -102,3 +102,15 @@ One entry per binding decision. Newest at the bottom. Frozen interfaces/names ch
 - Kèm trong vòng: §3c gate bắt drift `Devin MCP` trong §2 Execution invariants (câu cấm chứa token
   cấm → gate tự fail) → reword `Devin via MCP`; bài học: wording của rule chống drift cũng phải
   tránh token (xem VERIFICATION T-116).
+
+## D-011 (2026-10-11) — Bản core operating brief mới (brief Sếp 11-10) → docs/prompt-core-2026-10-11.md
+
+- Sếp soạn bản core vận hành "vừa" (219 dòng): Recon-first + thứ tự ưu tiên (Correctness & Quality →
+  Stability → Simplicity → Speed → Reuse → Low Dependency → Cost Efficiency) + quy trình 10 bước +
+  agent execution invariants + code intelligence + verification invariant + fix/escalation + parallelism +
+  git/integration + selective learning + decision rule + Tags/related skills + Definition of DONE.
+- Đối chiếu skill `lead-orchestrator` v1.7.1: cover toàn bộ nội dung; gap duy nhất đã bổ sung — §1.3
+  thêm `maintainable` + `reversible` vào chuỗi chọn giải pháp.
+- Quyết định: PROMPT.md giữ nguyên (D-009 còn hiệu lực — prompt ngắn, skill canonical); bản mới lưu docs
+  làm tham chiếu. Nếu Sếp chốt dùng làm prompt chính → cập nhật PROMPT.md + D thay thế D-009.
+- Reword bắt buộc khi lưu: tên lane cũ → `Devin via MCP` (tránh token cấm — preflight §3c).
