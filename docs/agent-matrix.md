@@ -24,7 +24,7 @@ HERMES — Lead Orchestrator (split · assign · verify · integrate · git)
 | Orchestration, verification, integration, git | **Hermes (self)** | — | split, prompts, verify ALL artifacts/claims, fix, integrate, final gate |
 
 Never assign a strong agent to a light task; free models first.
-Extended evidence (aoe-native-agent + freqtrade-kit + hermes-browser-kit programs, Oct 2026): Devin 9/9 first-try (incl. dynamic game bring-up T-702 — DirectDraw fail → windowed pivot, CD-check → MP-solo pivot; browser-kit T-201 bhkit core, selftest 13/13 first-pass); Cline 6/6 (incl. T-801 + browser-kit T-202: provider died twice pre-verify → Hermes salvage after re-verification; browser-kit T-204: integrated regression 7/7, idempotent); OpenCode 4/4 (browser-kit T-203: bootstrap + installer + docs, run2 after external-read card fix; freqtrade-kit D1 — API-adaptation fix + regression test, card-in-file, default model, first-pass ~156s, tree-diff verified). 0 escalations needed.
+Extended evidence (aoe-native-agent + freqtrade-kit + hermes-browser-kit programs, Oct 2026): Devin 10/10 first-try (incl. dynamic game bring-up T-702 — DirectDraw fail → windowed pivot, CD-check → MP-solo pivot; browser-kit T-201 bhkit core, selftest 13/13 first-pass; browser-kit M2 T-210 bounded net interception, E2E n=26 first-pass); Cline 7/7 (incl. T-801 + browser-kit T-202: provider died twice pre-verify → Hermes salvage after re-verification; browser-kit T-204: integrated regression 7/7, idempotent); OpenCode 5/5 (browser-kit T-203: bootstrap + installer + docs, run2 after external-read card fix; freqtrade-kit D1 — API-adaptation fix + regression test, card-in-file, default model, first-pass ~156s, tree-diff verified; browser-kit M2 T-211 session-pin module + own race found & fixed mid-run). 0 escalations needed. M2 wave (12/10): Cline T-209 salvaged — run 1 provider stream death (nothing written), run 2 with write-first preface wrote all 4 deliverables then hit the 1380s wall DURING its own final self-verify; Hermes reviewed + re-verified (selftest incl. o1-o3, VERIFY_OBSERVE n=5) + merged.
 
 ## Routing rules (quick)
 
@@ -40,9 +40,9 @@ Extended evidence (aoe-native-agent + freqtrade-kit + hermes-browser-kit program
 
 | Agent | First-try strengths (observed) | Weak spots → route elsewhere |
 |---|---|---|
-| Devin | architecture · core logic · RE / live bring-up · refactor · hard bugs with unknown cause (9/9 first-try — aoe + browser-kit) | reserve for real difficulty |
-| Cline | medium features · API/UI · docs · build+run infra (6/6 — aoe + browser-kit; 2 provider-death salvages) | long rewrite-from-corruption stalls without writing (28' live) → send to Devin |
-| OpenCode | boilerplate · unit tests · docs · review/cleanup · small isolated defect fixes (4/4 — aoe + kit D1 + browser-kit) | over-explores on fuzzy tasks → give a write-first instruction |
+| Devin | architecture · core logic · RE / live bring-up · refactor · hard bugs with unknown cause · bounded protocol/net internals (10/10 first-try — aoe + browser-kit) | reserve for real difficulty |
+| Cline | medium features · API/UI · docs · build+run infra (7/7 — aoe + browser-kit; 3 salvages: 2 provider-death + 1 wall-timeout) | long rewrite-from-corruption stalls without writing (28' live) → send to Devin; on wall-capped runs the final self-verify can eat the remaining `-t` wall with deliverables already on disk — inspect-first + salvage, do not relaunch |
+| OpenCode | boilerplate · unit tests · docs · review/cleanup · small isolated defect fixes (5/5 — aoe + kit D1 + browser-kit) | over-explores on fuzzy tasks → give a write-first instruction |
 
 Per round: record agent × task-type × outcome (+ failure mode, wall time) in the round ledger; consult this table before every assignment; update it at DONE. The table is the assignment ground truth — new evidence lands here.
 
@@ -61,7 +61,9 @@ Per round: record agent × task-type × outcome (+ failure mode, wall time) in t
   with partial artifacts. Smoke-test recovery (say SMOKE_OK), retry once with a NARROWER scope,
   then escalate. Use `-t` (task timeout; default `TMO-120` = 1380) AND a shell `timeout` wrapper. **Provider stream errors
   can kill a run even at the final commit** — inspect the worktree; if the work is complete, the
-  orchestrator completes the commit (see Field lessons).
+  orchestrator completes the commit (see Field lessons). **Wall-timeout is the same lane:** T-209 run 2 (12/10)
+  died at `-t` 1380s mid self-verify with every deliverable on disk — salvage (review + independent
+  re-verify + merge) beats relaunch; a relaunch would have burned the whole work again.
 - **OpenCode**: auto-rejects reads outside the project (`permission.external_directory` in
   `opencode.json`) — add allow globs, then relaunch. Old runs can linger after a relaunch — check
   session ids / artifact mtimes. `--title <name>` labels runs.
