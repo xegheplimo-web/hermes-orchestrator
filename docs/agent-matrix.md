@@ -41,7 +41,7 @@ Extended evidence (aoe-native-agent + freqtrade-kit + hermes-browser-kit program
 | Agent | First-try strengths (observed) | Weak spots → route elsewhere |
 |---|---|---|
 | Devin | architecture · core logic · RE / live bring-up · refactor · hard bugs with unknown cause · bounded protocol/net internals (10/10 first-try — aoe + browser-kit) | reserve for real difficulty |
-| Cline | medium features · API/UI · docs · build+run infra (7/7 — aoe + browser-kit; 3 salvages: 2 provider-death + 1 wall-timeout) | long rewrite-from-corruption stalls without writing (28' live) → send to Devin; on wall-capped runs the final self-verify can eat the remaining `-t` wall with deliverables already on disk — inspect-first + salvage, do not relaunch |
+| Cline | medium features · API/UI · docs · build+run infra (7/7 — aoe + browser-kit; 3 salvages: 2 provider-death + 1 wall-timeout) | long rewrite-from-corruption stalls without writing (28' live) → send to Devin; on wall-capped runs the final self-verify can eat the remaining `-t` wall with deliverables already on disk — inspect-first + salvage, do not relaunch (4th occurrence 16/10: T-102 Vietnam_Atlas wall-cap at self-verify, 6/6 deliverables on disk) |
 | OpenCode | boilerplate · unit tests · docs · review/cleanup · small isolated defect fixes (5/5 — aoe + kit D1 + browser-kit) | over-explores on fuzzy tasks → give a write-first instruction |
 
 Per round: record agent × task-type × outcome (+ failure mode, wall time) in the round ledger; consult this table before every assignment; update it at DONE. The table is the assignment ground truth — new evidence lands here.
@@ -88,6 +88,12 @@ Per round: record agent × task-type × outcome (+ failure mode, wall time) in t
 - **Control plane = source of truth**: `.orchestrator/` (TASKS.json · VERIFICATION.md · DECISIONS.md
   · PROJECT_STATE.md) updated in the SAME session as the merge, as a separate bookkeeping commit.
 - **Write-first for over-explorers**: "STOP exploring — WRITE the deliverable now, refine after".
+
+## Round D — Vietnam_Atlas (16/10)
+
+- **OpenCode T-101 (P0 fix lane)**: complete first-pass on 4 files + tests (89/89 worktree gates). Bot review later surfaced 3 real edge-case defects (loader guard for non-list `features`, partial-collection honesty, full-width CSV prefixes) → lead fix round. Budget a review-fix pass for edge-case hardening lanes.
+- **Cline T-102 (new tooling + docs)**: wall-cap during final self-verify, all deliverables on disk (2nd consecutive wall-timeout salvage — pattern solid). It was mid-verifying the schtasks roundtrip; lead completed it and found a real bug: register script's `$RepoRoot` off by one directory → task registers fine, fails at fire time. Caught by a bot review, not by the agent's own tests → registration artifacts need the query-the-command probe (lead-orchestrator §6.3, 16/10).
+- **Env**: MSYS `timeout` does NOT kill the native CLI child after the wrapper exits — reap by PID before worktree cleanup; an emptied husk dir can stay locked all session (lead-orchestrator §10).
 
 ## Launch
 
