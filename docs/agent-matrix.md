@@ -18,9 +18,9 @@ HERMES — Lead Orchestrator (split · assign · verify · integrate · git)
 
 | Difficulty | Agent | Command (this machine) | Work it gets |
 |---|---|---|---|
-| Hardest: architecture, complex bugs, large refactors, core logic, integration, RE / exploratory bring-up | **Devin CLI** (SWE-2) — only Devin lane | `devin --respect-workspace-trust false --permission-mode dangerous -p --prompt-file <prompt-file>` | architecture proposals, TDD builds, unknown-root-cause bugs, live-system bring-up (self-adapts around blockers) |
-| Medium: implementation, API/UI, tests, scoped independent tasks, build/run infra | **Cline** | `cline -P opencode-go -m longcat-2.5-preview-free -t 1380 "<prompt>"` | features, file edits, integration tests, build+run harnesses |
-| Light: boilerplate, tests, docs, lint/typecheck, review, small fixes | **OpenCode** | `opencode run --model opencode/muse-spark-1.3-contributor-free --title <name> "<prompt>"` | docs, unit tests, reviews, cleanups |
+| Hardest: architecture, complex bugs, large refactors, core logic, integration, RE / exploratory bring-up | **Devin CLI** (SWE-2) — only Devin lane | `devin --respect-workspace-trust=false --permission-mode dangerous -p --prompt-file <prompt-file>` | architecture proposals, TDD builds, unknown-root-cause bugs, live-system bring-up (self-adapts around blockers) |
+| Medium: implementation, API/UI, tests, scoped independent tasks, build/run infra | **Cline** | `cline -P opencode -m opencode/deepseek-v4.1-flash-free -t 1380 "<prompt>"` | features, file edits, integration tests, build+run harnesses |
+| Light: boilerplate, tests, docs, lint/typecheck, review, small fixes | **OpenCode** | `opencode run --model opencode/deepseek-v4.1-flash-free --title <name> "<prompt>"` | docs, unit tests, reviews, cleanups |
 | Orchestration, verification, integration, git | **Hermes (self)** | — | split, prompts, verify ALL artifacts/claims, fix, integrate, final gate |
 
 Never assign a strong agent to a light task; free models first.
@@ -49,7 +49,7 @@ Per round: record agent × task-type × outcome (+ failure mode, wall time) in t
 ## Pitfalls (observed live)
 
 - **Devin — CLI**: print mode cannot answer permission prompts — needs `--permission-mode dangerous` +
-  `--respect-workspace-trust false` for out-of-workspace reads. Exit 0 ≠ success (verify the
+  `--respect-workspace-trust=false` for out-of-workspace reads. Exit 0 ≠ success (verify the
   artifact). Leaves `.serena/` in the workspace (gitignored here). **Cards must forbid `.devin/**`
   writes** — ForceAsk even under `dangerous`: print mode rejects → run dies mid-flight (pending
   parallel writes cancelled, exit 0). Resume: `devin ... -c -p --prompt-file <follow-up>`.

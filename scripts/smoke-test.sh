@@ -64,15 +64,15 @@ echo "# smoke prompt" > "$WT/_prompts/T-101.md"
 
 OUT="$(bash "$HERE/launch-agent.sh" cline "$WT/T-101" "$WT/_prompts/T-101.md" --title T-101 --dry-run 2>&1)"; RC=$?
 [ "$RC" -eq 0 ] && ok "dry-run cline exits 0" || bad "dry-run cline exits 0 (rc=$RC)"
-chk_contains "dry-run cline shows verified command" "cline -P opencode-go -m longcat-2.5-preview-free" "$OUT"
+chk_contains "dry-run cline shows verified command" "cline -P opencode -m opencode/deepseek-v4.1-flash-free" "$OUT"
 
 OUT="$(bash "$HERE/launch-agent.sh" opencode "$WT/T-101" "$WT/_prompts/T-101.md" --title T-101 --dry-run 2>&1)"; RC=$?
 [ "$RC" -eq 0 ] && ok "dry-run opencode exits 0" || bad "dry-run opencode exits 0 (rc=$RC)"
-chk_contains "dry-run opencode shows verified command" "opencode run --model opencode/muse-spark-1.3-contributor-free" "$OUT"
+chk_contains "dry-run opencode shows verified command" "opencode run --model opencode/deepseek-v4.1-flash-free" "$OUT"
 
 OUT="$(bash "$HERE/launch-agent.sh" devin "$WT/T-101" "$WT/_prompts/T-101.md" --title T-101 --dry-run 2>&1)"; RC=$?
 [ "$RC" -eq 0 ] && ok "dry-run devin exits 0" || bad "dry-run devin exits 0 (rc=$RC)"
-chk_contains "dry-run devin shows canonical form" "devin --respect-workspace-trust false --permission-mode dangerous -p --prompt-file" "$OUT"
+chk_contains "dry-run devin shows canonical form" "devin --respect-workspace-trust=false --permission-mode dangerous -p --prompt-file" "$OUT"
 
 chk "dry-run created no log" test ! -f "$WT/T-101/agent_logs/T-101.log"
 

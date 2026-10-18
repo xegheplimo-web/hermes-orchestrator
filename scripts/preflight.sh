@@ -37,9 +37,9 @@ dr() { # dr <agent> <needle>...
   for n in "$@"; do want "$agent" "$n" "$out" || miss=1; done
   [ "$miss" -eq 0 ] && ok "$agent dry-run matches §9"
 }
-dr cline    "-P opencode-go" "-m longcat-2.5-preview-free" "-t 1380" "timeout 1500"
-dr opencode "opencode run --model opencode/muse-spark-1.3-contributor-free" "--title" "timeout 1500"
-dr devin    "devin --respect-workspace-trust false --permission-mode dangerous -p --prompt-file" "timeout 2400"
+dr cline    "-P opencode" "-m opencode/deepseek-v4.1-flash-free" "-t 1380" "timeout 1500"
+dr opencode "opencode run --model opencode/deepseek-v4.1-flash-free" "--title" "timeout 1500"
+dr devin    "devin --respect-workspace-trust=false --permission-mode dangerous -p --prompt-file" "timeout 2400"
 
 echo "== 3. key flags still exist in live CLIs =="
 flag() { # flag <desc> <needle> <cmd...>

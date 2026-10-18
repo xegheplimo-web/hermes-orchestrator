@@ -47,18 +47,21 @@ Configure the provider (one-time; stores state in `%USERPROFILE%\.cline\data\set
 which keeps the key local — never commit it):
 
 ```bash
-cline auth -p opencode-go -k <OPENCODE_GO_API_KEY> -m longcat-2.5-preview-free
+cline auth -p opencode -k <OPENCODE_GO_API_KEY> -m opencode/deepseek-v4.1-flash-free
 ```
 
-Model fact (verified against live catalogs 2026-10-06): on opencode-go the **only working free
-model is `longcat-2.5-preview-free`** (`space-bunny-free` is unavailable upstream; no `-free-extra`
-variants exist). Confirm the model actually used per run from
-`%USERPROFILE%\.cline\data\sessions\<id>\<id>.json` (field `model`), not from the request.
+Model fact (verified against live catalogs 2026-10-18): cline resolves models through the **`opencode`**
+provider (`-P opencode`, key = the same `oc_sk_…` OpenCode-Go key stored in
+`%USERPROFILE%\.local\share\opencode\auth.json`); the default lane model is
+**`opencode/deepseek-v4.1-flash-free`** (live-probed 2026-10-18: PONG round-trip OK). Note the
+`opencode-go` provider is a DIFFERENT catalog — `deepseek-v4.1-flash` there answers "Model access is
+disabled", and `…-free` variants don't exist under that prefix. Confirm the model actually used per
+run from `%USERPROFILE%\.cline\data\sessions\<id>\<id>.json` (field `model`), not from the request.
 
 Smoke test:
 
 ```bash
-cline -P opencode-go -m longcat-2.5-preview-free "say CLINE_SMOKE_OK"    # expect: CLINE_SMOKE_OK
+cline -P opencode -m opencode/deepseek-v4.1-flash-free "say CLINE_SMOKE_OK"    # expect: CLINE_SMOKE_OK
 ```
 
 ### 2.2 OpenCode (light worker)
@@ -79,7 +82,7 @@ Global model config `%USERPROFILE%\.config\opencode\opencode.jsonc`:
 ```jsonc
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "opencode/muse-spark-1.3-contributor-free",
+  "model": "opencode/deepseek-v4.1-flash-free",
   "small_model": "opencode/deepseek-v4-flash"
 }
 ```
@@ -94,7 +97,7 @@ Notes:
 Smoke test:
 
 ```bash
-opencode run --model opencode/muse-spark-1.3-contributor-free --title smoke "say OPENCODE_SMOKE_OK"
+opencode run --model opencode/deepseek-v4.1-flash-free --title smoke "say OPENCODE_SMOKE_OK"
 ```
 
 ### 2.3 Devin CLI (hard worker) — the only Devin execution lane (convention 2026-10-08)
@@ -126,13 +129,15 @@ devin doctor             # expected: 2 check(s): 2 passed, 0 warning(s), 0 failu
 Non-interactive launch — canonical form (flags verified on v3000.11.3):
 
 ```bash
-devin --respect-workspace-trust false --permission-mode dangerous -p --prompt-file <prompt-file>
+devin --respect-workspace-trust=false --permission-mode dangerous -p --prompt-file <prompt-file>
 ```
 
 - `-p` runs print mode (non-interactive); `--prompt-file` reads the task card from disk — no
   Windows argv limit, no quoting pitfalls (the kit launcher passes it for you).
-- `--respect-workspace-trust false` is **mandatory in fresh dirs**: print mode cannot show the
-  trust prompt and fails in an untrusted directory.
+- `--respect-workspace-trust=false` is **mandatory in fresh dirs**: print mode cannot show the
+  trust prompt and fails in an untrusted directory. Note the `=` form: as an optional-value flag
+  (devin ≥3000), `--respect-workspace-trust false` (space) swallows the value, `--permission-mode`
+  stops taking effect, and every write is rejected in print mode (verified 2026-10-18).
 - `--permission-mode dangerous` auto-approves all tools — required for reads/writes outside the
   agent's workspace.
 - Default model: SWE-2 family (`DEVIN_MODEL` default `swe-2-max`); pin per task with `--model`.
@@ -233,9 +238,9 @@ Then follow `docs/git-orchestration.md` for verify → merge → bookkeeping. He
 
 | Agent | Command (run from the task worktree; prompt from file) |
 |---|---|
-| cline | `timeout 1500 cline -P opencode-go -m longcat-2.5-preview-free -t 1380 "$(cat <prompt>)"` |
-| opencode | `timeout 1500 opencode run --model opencode/muse-spark-1.3-contributor-free --title <task> "$(cat <prompt>)"` |
-| devin | `timeout 2400 devin --respect-workspace-trust false --permission-mode dangerous -p --prompt-file <prompt-file>` |
+| cline | `timeout 1500 cline -P opencode -m opencode/deepseek-v4.1-flash-free -t 1380 "$(cat <prompt>)"` |
+| opencode | `timeout 1500 opencode run --model opencode/deepseek-v4.1-flash-free --title <task> "$(cat <prompt>)"` |
+| devin | `timeout 2400 devin --respect-workspace-trust=false --permission-mode dangerous -p --prompt-file <prompt-file>` |
 
 `scripts/launch-agent.sh` wraps exactly these (timeout + log + `EXIT=` marker); `--dry-run` prints
 the composed command. Operational rules learned live (details: `docs/agent-matrix.md`):
@@ -253,9 +258,9 @@ the composed command. Operational rules learned live (details: `docs/agent-matri
 
 | # | Check | Command | Expected (verified 2026-10-06) |
 |---|---|---|---|
-| 1 | CLIs present | `cline --version && opencode --version && devin --version` | 3.0.68 · 1.18.35 · devin 3000.11.3 |
-| 2 | Cline smoke | `cline -P opencode-go -m longcat-2.5-preview-free "say CLINE_SMOKE_OK"` | `CLINE_SMOKE_OK` |
-| 3 | OpenCode smoke | `opencode run --model opencode/muse-spark-1.3-contributor-free --title smoke "say OPENCODE_SMOKE_OK"` | `OPENCODE_SMOKE_OK` |
+| 1 | CLIs present | `cline --version && opencode --version && devin --version` | 3.0.73 · 1.18.35 · devin 3000.11.3 |
+| 2 | Cline smoke | `cline -P opencode -m opencode/deepseek-v4.1-flash-free "say CLINE_SMOKE_OK"` | `CLINE_SMOKE_OK` |
+| 3 | OpenCode smoke | `opencode run --model opencode/deepseek-v4.1-flash-free --title smoke "say OPENCODE_SMOKE_OK"` | `OPENCODE_SMOKE_OK` |
 | 4 | Devin health | `devin doctor` | 2 passed, 0 failures (v3000.11.3) |
 | 5 | Hook registered | `hermes hooks doctor` | all checks green |
 | 6 | Hook behavior | `bash scripts/agent-hooks/test-guard.sh` | 19 pass / 0 fail |
@@ -274,7 +279,7 @@ the composed command. Operational rules learned live (details: `docs/agent-matri
 | OpenCode refuses reads outside the project | `external_directory` guard | Add allow globs to the opencode config, relaunch |
 | Ghost diffs / "Committer identity unknown" in worktrees | Missing repo-local identity / CRLF | Pin repo-local `user.name`, `user.email`, `core.autocrlf false` |
 | Scope diff shows phantom noise once main moved | Two-dot diff | Use three-dot: `git diff main...HEAD` |
-| Cline 429 / "Model is unavailable" | Free-tier throttle / catalog drift | Stagger runs, respect cooldowns; re-check the live catalog; `longcat-2.5-preview-free` is the stable free pick |
+| Cline 429 / "Model is unavailable" / "Model access is disabled" | Free-tier throttle / catalog drift — note `opencode-go` and `opencode` are DIFFERENT catalogs | Stagger runs, respect cooldowns; re-check the live catalog; `opencode/deepseek-v4.1-flash-free` is the stable free pick (verified 2026-10-18) |
 | `npm i -g <pkg>` fails with EPERM under `...\hermes\tools\node-*` | Bundled npm's default global prefix points into the Hermes tools dir | Install with an explicit prefix: `npm i -g <pkg> --prefix "$APPDATA/npm"` (same dir as the existing CLI shims), then re-check `<cli> --version` |
 | Devin update fails: `devin.exe` "being used by another process" | A running devin CLI session holds the exe | Wait for devin sessions to exit, re-run `irm https://cli.devin.ai/install.ps1 \| iex`, verify `devin --version` |
 | `devin --prompt-file` → `Failed to read prompt file` | Path not readable by the native binary (MSYS `/e/...` style, or wrong cwd) | Pass a Windows-style path (`E:/...`; the kit launcher converts via `cygpath -m`) |

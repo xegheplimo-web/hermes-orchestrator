@@ -6,8 +6,8 @@
 #        [--title T] [--log L] [--model M] [--timeout S] [--dry-run]
 #
 # Defaults:
-#   models   : cline    -> longcat-2.5-preview-free (provider -P opencode-go)
-#              opencode -> opencode/muse-spark-1.3-contributor-free
+#   models   : cline    -> opencode/deepseek-v4.1-flash-free (provider -P opencode)
+#              opencode -> opencode/deepseek-v4.1-flash-free
 #   timeout  : cline/opencode 1500s, devin 2400s (cline's internal -t = TMO-120; override via CLINE_T env)
 #   log      : <workdir>/agent_logs/<title>.log  (title defaults to prompt file basename)
 # Exit code = the agent's own exit code. `EXIT=<code>` is appended to the log and printed.
@@ -66,18 +66,22 @@ CLINE_T="${CLINE_T:-$((TMO - 120))}"
 
 case "$AGENT" in
   cline)
-    [ -n "$MODEL" ] || MODEL="longcat-2.5-preview-free"
+    [ -n "$MODEL" ] || MODEL="opencode/deepseek-v4.1-flash-free"
     BIN=cline
-    PROC="cline -P opencode-go -m $MODEL -t $CLINE_T"
+    PROC="cline -P opencode -m $MODEL -t $CLINE_T"
     ;;
   opencode)
-    [ -n "$MODEL" ] || MODEL="opencode/muse-spark-1.3-contributor-free"
+    [ -n "$MODEL" ] || MODEL="opencode/deepseek-v4.1-flash-free"
     BIN=opencode
     PROC="opencode run --model $MODEL --title \"$TITLE\""
     ;;
   devin)
     BIN=devin
-    PROC="devin --respect-workspace-trust false --permission-mode dangerous -p --prompt-file"
+    # NOTE: --respect-workspace-trust is an OPTIONAL-VALUE flag in devin >=3000.
+    # With a space ("--respect-workspace-trust false") the value is swallowed but
+    # --permission-mode stops taking effect and every write is rejected in -p mode.
+    # Use the = form.
+    PROC="devin --respect-workspace-trust=false --permission-mode dangerous -p --prompt-file"
     ;;
 esac
 
@@ -100,10 +104,14 @@ cd "$WORKDIR" || { echo "ERROR: cannot cd to $WORKDIR"; exit 2; }
 
 PROMPT="$(cat "$PFILE")"
 
+# Delegated agents must never start a training run inside the workspace:
+# trainer.py refuses to start when this is set (see the orchestration guard).
+export SLBOT_TRAIN_LOCK=agent-sandbox
+
 case "$AGENT" in
-  cline)    timeout "$TMO" cline -P opencode-go -m "$MODEL" -t "$CLINE_T" "$PROMPT" > "$LOG" 2>&1; RC=$? ;;
+  cline)    timeout "$TMO" cline -P opencode -m "$MODEL" -t "$CLINE_T" "$PROMPT" > "$LOG" 2>&1; RC=$? ;;
   opencode) timeout "$TMO" opencode run --model "$MODEL" --title "$TITLE" "$PROMPT" > "$LOG" 2>&1; RC=$? ;;
-  devin)    timeout "$TMO" devin --respect-workspace-trust false --permission-mode dangerous -p --prompt-file "$DPFILE" > "$LOG" 2>&1; RC=$? ;;
+  devin)    timeout "$TMO" devin --respect-workspace-trust=false --permission-mode dangerous -p --prompt-file "$DPFILE" > "$LOG" 2>&1; RC=$? ;;
 esac
 
 echo "EXIT=$RC" | tee -a "$LOG"

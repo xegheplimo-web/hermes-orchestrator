@@ -103,6 +103,20 @@ One entry per binding decision. Newest at the bottom. Frozen interfaces/names ch
   cấm → gate tự fail) → reword `Devin via MCP`; bài học: wording của rule chống drift cũng phải
   tránh token (xem VERIFICATION T-116).
 
+## D-012 (2026-10-18) — Lane-model resync: cline + opencode → `opencode/deepseek-v4.1-flash-free`; devin flag `=false` landed (T-117)
+
+- Audit nhất quán toàn kit phát hiện 2 drift: (1) fix devin `--respect-workspace-trust=false`
+  (17/10, optional-value flag — form space làm `--permission-mode` mất hiệu lực) nằm uncommitted →
+  preflight §2 + smoke §4 expect form cũ → 2 gate FAIL; (2) opencode default
+  `muse-spark-1.3-contributor-free` đã chết khỏi catalog (drift §21).
+- **Cline lane**: `-P opencode` (KHÔNG phải `opencode-go` — hai catalog khác nhau; qua
+  `opencode-go`, deepseek trả "Model access is disabled", `…-free` không tồn tại) +
+  `-m opencode/deepseek-v4.1-flash-free`. Live-probe 5 tên: chỉ model này + `longcat-2.5-preview-free`
+  + `beam-free` qua provider tương ứng trả PONG.
+- **OpenCode lane**: default → `opencode/deepseek-v4.1-flash-free` (PONG).
+- Evidence: PREFLIGHT 14/14 · SMOKE 43/43 · GUARD 19/19 · live probe qua launcher thật EXIT=0/PONG.
+  Gates verify trước/sau — drift cũ 13/1 + 42/1 → 14/0 + 43/0.
+
 ## D-011 (2026-10-11) — Bản core operating brief mới (brief Sếp 11-10) → docs/prompt-core-2026-10-11.md
 
 - Sếp soạn bản core vận hành "vừa" (219 dòng): Recon-first + thứ tự ưu tiên (Correctness & Quality →

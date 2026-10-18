@@ -1,11 +1,19 @@
 {
   "meta": {
     "project": "hermes-orchestrator",
-    "updated": "2026-10-11",
+    "updated": "2026-10-18",
     "milestone": "M4 — Post-Run Learning Loop (D-010)",
     "worktrees_root": "E:/hermes-orchestrator-worktrees",
     "prompts_root": "E:/hermes-orchestrator-worktrees/_prompts",
-    "status_legend": ["queued", "dispatched", "in_progress", "verifying", "done", "blocked", "failed"]
+    "status_legend": [
+      "queued",
+      "dispatched",
+      "in_progress",
+      "verifying",
+      "done",
+      "blocked",
+      "failed"
+    ]
   },
   "tasks": [
     {
@@ -13,15 +21,31 @@
       "title": "Kit bootstrap (prompt, templates, scripts, self-test)",
       "status": "done",
       "agent": "hermes",
-      "scope": ["PROMPT.md", "README.md", "AGENTS.md", "docs/**", "templates/**", "scripts/**", ".orchestrator/**", ".gitignore", ".gitattributes"],
+      "scope": [
+        "PROMPT.md",
+        "README.md",
+        "AGENTS.md",
+        "docs/**",
+        "templates/**",
+        "scripts/**",
+        ".orchestrator/**",
+        ".gitignore",
+        ".gitattributes"
+      ],
       "deliverables": [
         "PROMPT.md (canonical orchestrator prompt)",
         "docs/agent-matrix.md + docs/gates.md + docs/git-orchestration.md",
         "templates/task-card.md + templates/decision-plan.md + templates/final-report.md + templates/control-plane/*",
         "scripts/bootstrap-project.sh + scripts/new-task-worktree.sh + scripts/launch-agent.sh + scripts/smoke-test.sh"
       ],
-      "acceptance": ["smoke test green", "initial commit on main"],
-      "verify": ["bash scripts/smoke-test.sh", "git log --oneline -1"],
+      "acceptance": [
+        "smoke test green",
+        "initial commit on main"
+      ],
+      "verify": [
+        "bash scripts/smoke-test.sh",
+        "git log --oneline -1"
+      ],
       "fail_count": 0,
       "notes": "Created 2026-10-06 from Sếp's canonical Lead Orchestrator brief; verified by running scripts/smoke-test.sh (evidence recorded in VERIFICATION.md)."
     },
@@ -30,13 +54,22 @@
       "title": "GitHub remote setup + push discipline",
       "status": "done",
       "agent": "hermes",
-      "scope": [".git remote", ".orchestrator/**"],
+      "scope": [
+        ".git remote",
+        ".orchestrator/**"
+      ],
       "deliverables": [
         "public repo https://github.com/xegheplimo-web/hermes-orchestrator",
         "origin remote + main tracking; first push verified via git ls-remote"
       ],
-      "acceptance": ["gh repo view resolves as PUBLIC", "git ls-remote origin HEAD == local main"],
-      "verify": ["git ls-remote origin", "gh repo view xegheplimo-web/hermes-orchestrator"],
+      "acceptance": [
+        "gh repo view resolves as PUBLIC",
+        "git ls-remote origin HEAD == local main"
+      ],
+      "verify": [
+        "git ls-remote origin",
+        "gh repo view xegheplimo-web/hermes-orchestrator"
+      ],
       "fail_count": 0,
       "notes": "D-004. Hermes owns git; agents never push. Repo-local core.autocrlf pinned false; secrets scan run before the first push (clean)."
     },
@@ -45,13 +78,27 @@
       "title": "docs/installation.md — full verified installation guide + README install section",
       "status": "done",
       "agent": "hermes",
-      "scope": ["docs/installation.md", "README.md"],
+      "scope": [
+        "docs/installation.md",
+        "README.md"
+      ],
       "deliverables": [
         "docs/installation.md: component map · prerequisites · agent CLIs · provider auth · skill + guard hook · kit self-test · first-project quickstart · launch conventions · verification checklist · troubleshooting · machine inventory",
         "README.md: repo link + layout row + Install short path"
       ],
-      "acceptance": ["kit smoke green after the change", "launch dry-runs match installed CLIs", "guard tests 16/16", "hooks doctor healthy"],
-      "verify": ["bash scripts/smoke-test.sh", "bash scripts/agent-hooks/test-guard.sh", "bash scripts/launch-agent.sh <agent> <workdir> <prompt> --dry-run", "hermes hooks doctor", "python scripts/doc-stats.py ."],
+      "acceptance": [
+        "kit smoke green after the change",
+        "launch dry-runs match installed CLIs",
+        "guard tests 16/16",
+        "hooks doctor healthy"
+      ],
+      "verify": [
+        "bash scripts/smoke-test.sh",
+        "bash scripts/agent-hooks/test-guard.sh",
+        "bash scripts/launch-agent.sh <agent> <workdir> <prompt> --dry-run",
+        "hermes hooks doctor",
+        "python scripts/doc-stats.py ."
+      ],
       "fail_count": 0,
       "notes": "Every version/flag/expected value re-verified live before documenting (cline 3.0.68 · opencode 1.18.34 · devin 3000.10.21; dry-runs for all three agents; hook mirror diff identical to live)."
     },
@@ -60,15 +107,31 @@
       "title": "Upgrade lane: CLI updates (opencode 1.18.35 · devin 3000.11.3) + Superpowers plugin + §9 re-verify + docs sync",
       "status": "done",
       "agent": "hermes",
-      "scope": ["docs/installation.md", ".orchestrator/**"],
+      "scope": [
+        "docs/installation.md",
+        ".orchestrator/**"
+      ],
       "deliverables": [
         "opencode 1.18.34 -> 1.18.35 (npm install with --prefix %APPDATA%/npm after EPERM on the Hermes tools prefix)",
         "devin 3000.10.21 -> 3000.11.3 (updater re-run once the devin session released the exe lock)",
         "Superpowers plugin 6.4.2 installed + enabled (skills superpowers:*; fresh-session bootstrap verified)",
         "docs/installation.md synced: version rows, npm --prefix + devin exe-lock troubleshooting, section 3.3 Superpowers"
       ],
-      "acceptance": ["§9 re-verify green after upgrades", "expected values in docs match installed CLIs", "kit smoke green"],
-      "verify": ["bash scripts/smoke-test.sh", "bash scripts/agent-hooks/test-guard.sh", "bash scripts/launch-agent.sh <agent> <workdir> <prompt> --dry-run", "opencode run ... say OPENCODE_SMOKE_OK", "devin ... reply exactly DEVIN_SMOKE_OK", "devin doctor", "hermes plugins doctor superpowers", "python scripts/doc-stats.py ."],
+      "acceptance": [
+        "§9 re-verify green after upgrades",
+        "expected values in docs match installed CLIs",
+        "kit smoke green"
+      ],
+      "verify": [
+        "bash scripts/smoke-test.sh",
+        "bash scripts/agent-hooks/test-guard.sh",
+        "bash scripts/launch-agent.sh <agent> <workdir> <prompt> --dry-run",
+        "opencode run ... say OPENCODE_SMOKE_OK",
+        "devin ... reply exactly DEVIN_SMOKE_OK",
+        "devin doctor",
+        "hermes plugins doctor superpowers",
+        "python scripts/doc-stats.py ."
+      ],
       "fail_count": 0,
       "notes": "Executed 2026-10-07 on Sếp's go (A+B+C). Superpowers install needed --force over the community-source CAUTION scan (findings were docs/tests noise; plugin code reviewed before override). Deviations: devin update deferred until the R11 devin session exited, then ran clean; opencode npm postinstall skipped by the allow-scripts policy (harmless — binary + smoke verified). Evidence in VERIFICATION.md."
     },
@@ -77,14 +140,25 @@
       "title": "preflight.sh — một lệnh §9-check (versions · dry-runs · flag greps) + lesson sync vào skills",
       "status": "done",
       "agent": "hermes",
-      "scope": ["scripts/preflight.sh", "docs/installation.md", ".orchestrator/**"],
+      "scope": [
+        "scripts/preflight.sh",
+        "docs/installation.md",
+        ".orchestrator/**"
+      ],
       "deliverables": [
         "scripts/preflight.sh: CLI versions + 3x dry-run vs §9 + key-flag greps in the live CLIs; exit != 0 = drift",
         "docs/installation.md: §4 + §7 (row 9) reference the script; §9 inventory now 43/43",
         "skill sync: lead-orchestrator §9/§11 (preflight) · opencode + cline-cli (npm --prefix upgrades) · hermes-self-upgrade (update-check topology quirk) · multi-agent-orchestration (canonical cross-pointer)"
       ],
-      "acceptance": ["preflight green on this machine", "kit smoke green (syntax auto-covered; 43/43)", "docs + skill reference the script"],
-      "verify": ["bash scripts/preflight.sh", "bash scripts/smoke-test.sh"],
+      "acceptance": [
+        "preflight green on this machine",
+        "kit smoke green (syntax auto-covered; 43/43)",
+        "docs + skill reference the script"
+      ],
+      "verify": [
+        "bash scripts/preflight.sh",
+        "bash scripts/smoke-test.sh"
+      ],
       "fail_count": 0,
       "notes": "First concrete round-end improvement item (Sếp: keep quality + speed compounding). Canary 2026-10-07: PREFLIGHT 11 passed / 0 failed; smoke 43/43."
     },
@@ -93,15 +167,28 @@
       "title": "PR review loop — agent-reviews skills + kit integration (docs/gates/PROMPT/skill)",
       "status": "done",
       "agent": "hermes",
-      "scope": ["docs/git-orchestration.md", "docs/gates.md", "PROMPT.md", ".orchestrator/**", "skill lead-orchestrator"],
+      "scope": [
+        "docs/git-orchestration.md",
+        "docs/gates.md",
+        "PROMPT.md",
+        ".orchestrator/**",
+        "skill lead-orchestrator"
+      ],
       "deliverables": [
         "Hub skills resolve-reviews / resolve-agent-reviews / resolve-human-reviews installed (pbakaus/agent-reviews, MIT)",
         "docs/git-orchestration.md: §PR review loop (fetch → classify → act → poll → gate)",
         "docs/gates.md: DONE line 'Review comments PASS' + evidence bullet",
         "PROMPT.md §16 extension + skill lead-orchestrator v1.2.0 (§2 7b + §12)"
       ],
-      "acceptance": ["kit smoke green after the change", "resolve-* skills listed enabled + up_to_date", "control plane synced (D-005) in the same session"],
-      "verify": ["bash scripts/smoke-test.sh", "hermes skills check"],
+      "acceptance": [
+        "kit smoke green after the change",
+        "resolve-* skills listed enabled + up_to_date",
+        "control plane synced (D-005) in the same session"
+      ],
+      "verify": [
+        "bash scripts/smoke-test.sh",
+        "hermes skills check"
+      ],
       "fail_count": 0,
       "notes": "Sếp chốt 2026-10-07 sau phân tích pbakaus/agent-reviews: cài 3 skill + thêm bước vào kit/quy trình. D-005. Skills run npx agent-reviews at runtime; auth reuses gh."
     },
@@ -110,15 +197,27 @@
       "title": "Sync cline -t default (TMO-120 = 1380) after 23c476f — preflight + docs + skill",
       "status": "done",
       "agent": "hermes",
-      "scope": ["scripts/preflight.sh", "docs/agent-matrix.md", "docs/installation.md", "README.md", "skill lead-orchestrator"],
+      "scope": [
+        "scripts/preflight.sh",
+        "docs/agent-matrix.md",
+        "docs/installation.md",
+        "README.md",
+        "skill lead-orchestrator"
+      ],
       "deliverables": [
         "preflight expectation synced: cline dry-run `-t 1380` (was 1200)",
         "docs/agent-matrix.md ×2 + docs/installation.md ×3 (command row · smoke comment · checklist row 42→43) + README smoke count",
         "skill lead-orchestrator §6 bullet + §9 snippet → `-t 1380`",
         "drift gate-clean: PREFLIGHT 11/11 + SMOKE 43/43"
       ],
-      "acceptance": ["PREFLIGHT: 11 passed, 0 failed", "SMOKE: ALL GREEN — 43 passed, 0 failed"],
-      "verify": ["bash scripts/preflight.sh", "bash scripts/smoke-test.sh"],
+      "acceptance": [
+        "PREFLIGHT: 11 passed, 0 failed",
+        "SMOKE: ALL GREEN — 43 passed, 0 failed"
+      ],
+      "verify": [
+        "bash scripts/preflight.sh",
+        "bash scripts/smoke-test.sh"
+      ],
       "fail_count": 0,
       "notes": "Found by running preflight after the T-109 edits: 23c476f changed the cline -t default (TMO-120) but only the skill §9 note was synced. Grep-driven sweep: every literal pinning '-t 1200' or the stale smoke count updated."
     },
@@ -127,15 +226,28 @@
       "title": "Adopt §0 core vận hành (bản ngắn) + selective-learning & routing-memory (skills + kit)",
       "status": "done",
       "agent": "hermes",
-      "scope": ["PROMPT.md", "README.md", "docs/agent-matrix.md", ".orchestrator/**", "skill lead-orchestrator", "skill multi-agent-orchestration"],
+      "scope": [
+        "PROMPT.md",
+        "README.md",
+        "docs/agent-matrix.md",
+        ".orchestrator/**",
+        "skill lead-orchestrator",
+        "skill multi-agent-orchestration"
+      ],
       "deliverables": [
         "PROMPT.md §0: Lead Orchestrator + Technical Owner (recon first · docs = reference · Recon → … → Final Verify · completion = runtime evidence)",
         "docs/agent-matrix.md: Routing memory (agent × task-type table + per-round update rule)",
         "skill lead-orchestrator: §0 operative core + §13 learning discipline (selective; /journey audit loop)",
         "skill multi-agent-orchestration: standing rules — recon, selective learning"
       ],
-      "acceptance": ["kit smoke green after the change", "control plane synced (D-006) in the same session"],
-      "verify": ["bash scripts/smoke-test.sh", "python scripts/doc-stats.py ."],
+      "acceptance": [
+        "kit smoke green after the change",
+        "control plane synced (D-006) in the same session"
+      ],
+      "verify": [
+        "bash scripts/smoke-test.sh",
+        "python scripts/doc-stats.py ."
+      ],
       "fail_count": 0,
       "notes": "Sếp chốt 2026-10-07: dùng bản ngắn (giữ luật quan trọng nhất); §1–§31 giữ nguyên làm tham chiếu. Sync vào skill + kit theo luật 'cập nhật skill liên quan, không tạo mới'."
     },
@@ -144,7 +256,17 @@
       "title": "Devin lane → cloud (MCP/API) primary; CLI = local fallback — skill + kit sync",
       "status": "done",
       "agent": "hermes",
-      "scope": ["PROMPT.md", "README.md", "AGENTS.md", "docs/agent-matrix.md", "docs/installation.md", "scripts/preflight.sh", ".orchestrator/**", "skill lead-orchestrator", "skill devin-cli"],
+      "scope": [
+        "PROMPT.md",
+        "README.md",
+        "AGENTS.md",
+        "docs/agent-matrix.md",
+        "docs/installation.md",
+        "scripts/preflight.sh",
+        ".orchestrator/**",
+        "skill lead-orchestrator",
+        "skill devin-cli"
+      ],
       "deliverables": [
         "skill lead-orchestrator v1.3.0: roster row, §6 cloud pitfall block, §9 two-lane launch",
         "skill devin-cli v1.1.0: cloud-sessions section (MCP/REST) + description updated",
@@ -152,8 +274,16 @@
         "scripts/preflight.sh §3b: Devin cloud checks (endpoint · MCP server registered · API key present)",
         "control plane: D-007 + this task + PROJECT_STATE; drift fix guard-test 16→19"
       ],
-      "acceptance": ["preflight green (14 passed / 0 failed) once the Devin MCP lane is configured", "kit smoke green (43/43)", "skills lint clean"],
-      "verify": ["bash scripts/preflight.sh", "bash scripts/smoke-test.sh", "hermes mcp test devin (after the user-run add step)"],
+      "acceptance": [
+        "preflight green (14 passed / 0 failed) once the Devin MCP lane is configured",
+        "kit smoke green (43/43)",
+        "skills lint clean"
+      ],
+      "verify": [
+        "bash scripts/preflight.sh",
+        "bash scripts/smoke-test.sh",
+        "hermes mcp test devin (after the user-run add step)"
+      ],
       "fail_count": 0,
       "notes": "Sếp 2026-10-08: đổi Devin CLI -> Devin MCP/API trong quy trình. MCP add = user-run (key không qua chat); smoke cuối sau bước add. Kèm fix drift: guard-test count 16->19 trong installation.md."
     },
@@ -276,12 +406,42 @@
       ],
       "fail_count": 0,
       "notes": "Sếp 2026-10-11: spec thả untracked vào root kit → canonize 1 bản (docs/post-run-learning-loop.md), thay §22 cũ (replace, không stack); lesson memory-replace=whole-entry → hermes-self-upgrade; §3c bắt drift câu cấm ('Devin MCP', §2 invariants) → reword 'Devin via MCP'; session song song 46811d sửa trùng refs 2 skill khác — kết quả khớp, không stack."
+    },
+    {
+      "id": "T-117",
+      "title": "Consistency audit + lane-model resync (devin =false · cline provider-default · opencode deepseek-v4.1-flash-free)",
+      "status": "done",
+      "agent": "hermes",
+      "acceptance": [
+        "preflight 14/14 · smoke 43/43 · guard 19/19 — all green",
+        "devin canonical form =false landed (commit fix from 17/10) + expectation synced in preflight §2 + smoke §4 + docs",
+        "cline lane no longer pins -m: uses opencode-go provider default (step-5-preview); --model override verified live both paths",
+        "opencode default -> opencode/deepseek-v4.1-flash-free (live-probed PONG)",
+        "stale literals swept: agent-matrix ×3 · installation ×8 · README ×1 · launch/preflight/smoke ×7",
+        "remote synced: git ls-remote origin == HEAD"
+      ]
     }
   ],
   "backlog": [
-    {"id": "T-101", "title": "status renderer: TASKS.json -> compact board (python, stdout only)", "suggested_agent": "opencode"},
-    {"id": "T-102", "title": "secret-scan pre-commit hook", "suggested_agent": "opencode"},
-    {"id": "T-103", "title": "CI workflow: shellcheck + smoke-test on push", "suggested_agent": "cline"},
-    {"id": "T-108", "title": "round ledger: auto-append rows from agent_logs/*_result.json to the verification doc", "suggested_agent": "opencode"}
+    {
+      "id": "T-101",
+      "title": "status renderer: TASKS.json -> compact board (python, stdout only)",
+      "suggested_agent": "opencode"
+    },
+    {
+      "id": "T-102",
+      "title": "secret-scan pre-commit hook",
+      "suggested_agent": "opencode"
+    },
+    {
+      "id": "T-103",
+      "title": "CI workflow: shellcheck + smoke-test on push",
+      "suggested_agent": "cline"
+    },
+    {
+      "id": "T-108",
+      "title": "round ledger: auto-append rows from agent_logs/*_result.json to the verification doc",
+      "suggested_agent": "opencode"
+    }
   ]
 }
