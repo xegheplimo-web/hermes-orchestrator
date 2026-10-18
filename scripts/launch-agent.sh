@@ -9,7 +9,8 @@
 #   models   : cline    -> opencode/deepseek-v4.1-flash-free (provider -P opencode)
 #              opencode -> opencode/deepseek-v4.1-flash-free
 #   timeout  : cline/opencode 1500s, devin 2400s (cline's internal -t = TMO-120; override via CLINE_T env)
-#   log      : <workdir>/agent_logs/<title>.log  (title defaults to prompt file basename)
+#   log      : <worktrees-root>/_logs/<title>-<timestamp>.log  (outside the task worktree; unique per attempt)
+#              (title defaults to prompt file basename)
 # Exit code = the agent's own exit code. `EXIT=<code>` is appended to the log and printed.
 # devin runs non-interactive print mode: `-p --prompt-file <FILE>` (path converted for the native binary).
 set -u
@@ -20,7 +21,7 @@ Usage: bash scripts/launch-agent.sh <cline|opencode|devin> <workdir> <prompt-fil
 
 Options:
   --title NAME     run title (default: prompt-file basename without extension)
-  --log FILE       log path (default: <workdir>/agent_logs/<title>.log)
+  --log FILE       log path (default: <worktrees-root>/_logs/<title>-<timestamp>.log)
   --model M        model override (cline / opencode)
   --timeout SECS   wall-clock timeout (default: cline/opencode 1500, devin 2400)
   --dry-run        print the composed command without running it
@@ -57,7 +58,18 @@ if command -v cygpath >/dev/null 2>&1; then
 fi
 
 [ -n "$TITLE" ] || { TITLE="$(basename "$PFILE")"; TITLE="${TITLE%.*}"; }
-[ -n "$LOG" ] || LOG="$WORKDIR/agent_logs/$TITLE.log"
+if [ -z "$LOG" ]; then
+  # Default log lives OUTSIDE the task worktree (survives worktree cleanup),
+  # in the worktrees root's _logs dir, with a unique per-attempt name.
+  # Fallback to the in-workdir agent_logs/ when no sibling _logs/ exists
+  # (e.g. dispatching straight into a project root, not a task worktree).
+  WT_ROOT="$(dirname "$WORKDIR")"
+  if [ -d "$WT_ROOT/_logs" ]; then
+    LOG="$WT_ROOT/_logs/$TITLE-$(date +%Y%m%d-%H%M%S-%N).log"
+  else
+    LOG="$WORKDIR/agent_logs/$TITLE.log"
+  fi
+fi
 if [ -z "$TMO" ]; then
   case "$AGENT" in devin) TMO=2400 ;; *) TMO=1500 ;; esac
 fi

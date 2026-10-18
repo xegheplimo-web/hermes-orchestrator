@@ -20,7 +20,7 @@ line by line against this document.
 | 7 | **Guard hook `block-dangerous.sh`** | Live `pre_tool_call` safety net (fail-open) | `%LOCALAPPDATA%\hermes\agent-hooks\block-dangerous.sh` |
 
 Path conventions across this stack: projects live at `E:\<project>`; per-task worktrees at
-`E:\<project>-worktrees\<TASK-ID>`; task prompts in `_prompts\`, run logs in `agent_logs\`.
+`E:\<project>-worktrees\<TASK-ID>`; task prompts in `_prompts\`, run logs in `<worktrees-root>/_logs/` (outside worktrees, survives cleanup).
 
 ## 1. Prerequisites
 
@@ -92,7 +92,7 @@ Notes:
 - Reads outside the project are auto-rejected by default (`external_directory` guard) — add allow
   globs under `permission.external_directory` in the opencode config (`opencode.jsonc`) when a task
   must read other repos, then relaunch.
-- `--title <name>` labels a run; keep logs in `agent_logs\`.
+- `--title <name>` labels a run; default log path is `<worktrees-root>/_logs/<title>-<timestamp>.log` (override with `--log FILE`).
 
 Smoke test:
 
@@ -244,6 +244,13 @@ Then follow `docs/git-orchestration.md` for verify → merge → bookkeeping. He
 
 `scripts/launch-agent.sh` wraps exactly these (timeout + log + `EXIT=` marker); `--dry-run` prints
 the composed command. Operational rules learned live (details: `docs/agent-matrix.md`):
+
+### Runtime evidence (RUNS.jsonl)
+
+- `.orchestrator/RUNS.jsonl` (gitignored raw telemetry) is scaffolded by `scripts/bootstrap-project.sh` (empty file, never overwritten).
+- `scripts/record-run.py` appends one `hermes.run.v1` JSON object per line; required fields: `run_id`, `task_id`, `agent`, `model`, `task_type`, `duration_s`, `exit_code`, `provider_failure`, `verify_status`, `retry_index`, `verified_by` (plus `salvaged`, `timestamp`).
+- Agent ∈ {cline, opencode, devin, hermes}; verify_status ∈ {PASS, FAIL, PENDING, UNVERIFIED}. Duplicate `run_id` is rejected (retry = new run_id). Failed runs are recorded as-is; the tool never rewrites a verdict.
+- Hermes (not the agent lane) writes the final verdict; the tool is append-only mechanism.
 
 - **Long runs must survive the parent session**: spawn with `persist_on_release=true`
   (Hermes `terminal(background=true, notify=true, persist_on_release=true)`); otherwise lifecycle

@@ -74,10 +74,19 @@ for t in "$TPL"/*; do
   rendered=$((rendered+1))
 done
 
+# --- RUNS.jsonl scaffold (non-destructive) ---
+RUNS="$PROJ/.orchestrator/RUNS.jsonl"
+if [ ! -e "$RUNS" ]; then
+  : > "$RUNS"
+  echo "  created: .orchestrator/RUNS.jsonl"
+else
+  echo "  skip (exists): .orchestrator/RUNS.jsonl"
+fi
+
 # --- .gitignore entries ---
 GI="$PROJ/.gitignore"
 touch "$GI"
-for entry in "agent_logs/" ".serena/" "_sandbox/" "*.log"; do
+for entry in "agent_logs/" ".serena/" "_sandbox/" "*.log" ".orchestrator/RUNS.jsonl"; do
   if ! grep -qxF "$entry" "$GI" 2>/dev/null; then
     printf '%s\n' "$entry" >> "$GI"
   fi
