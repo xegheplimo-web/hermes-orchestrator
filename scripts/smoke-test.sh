@@ -163,6 +163,24 @@ RC=$?
 if [ "$RC" -ne 0 ]; then ok "record-run bad agent exits non-zero"; else bad "record-run bad agent exits non-zero"; fi
 if [ "$(wc -l < "$RRD/RUNS.jsonl" | tr -d ' ')" -eq 3 ]; then ok "bad agent leaves line count unchanged"; else bad "bad agent leaves line count unchanged"; fi
 
+# hardening: negative numbers rejected
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r5 --task-id T --agent opencode --model m --task-type small-fix --duration-s -5 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
+RC=$?
+if [ "$RC" -ne 0 ]; then ok "negative duration rejected"; else bad "negative duration rejected"; fi
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r6 --task-id T --agent opencode --model m --task-type small-fix --duration-s 1 --exit-code 0 --provider-failure false --verify-status PASS --retry-index -2 --verified-by hermes >/dev/null 2>&1
+RC=$?
+if [ "$RC" -ne 0 ]; then ok "negative retry_index rejected"; else bad "negative retry_index rejected"; fi
+if [ "$(wc -l < "$RRD/RUNS.jsonl" | tr -d ' ')" -eq 3 ]; then ok "negative values leave file unchanged"; else bad "negative values leave file unchanged"; fi
+
+# hardening: corrupt existing JSONL line must block appends (no silent skip)
+RRD2="$RR/" ; mkdir -p "$RR/x"; RR2="$RR/x/.orchestrator"; mkdir -p "$RR2"
+printf '%s\n' 'not-json-at-all{{{' > "$RR2/RUNS.jsonl"
+RRD2="$(command -v cygpath >/dev/null 2>&1 && cygpath -m "$RR2" || printf '%s' "$RR2")"
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD2" --run-id r7 --task-id T --agent opencode --model m --task-type small-fix --duration-s 1 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
+RC=$?
+if [ "$RC" -ne 0 ]; then ok "corrupt JSONL line blocks append"; else bad "corrupt JSONL line blocks append"; fi
+if [ "$(wc -l < "$RR2/RUNS.jsonl" | tr -d ' ')" -eq 1 ]; then ok "corrupt file left untouched"; else bad "corrupt file left untouched"; fi
+
 echo "== 8. log retention =="
 WT3="$SMOKE/wt3"; mkdir -p "$WT3/T-101" "$WT3/_logs"
 PROMPT3="$SMOKE/prompt3.md"; printf '# p

@@ -4,6 +4,7 @@ import argparse
 import json
 import sys
 from datetime import datetime, timezone
+from typing import NoReturn
 from pathlib import Path
 
 SCHEMA = "hermes.run.v1"
@@ -24,7 +25,7 @@ def parse_bool(value):
     raise argparse.ArgumentTypeError("invalid boolean value: %r" % value)
 
 
-def fail(msg):
+def fail(msg: str) -> NoReturn:
     print("ERROR: %s" % msg, file=sys.stderr)
     sys.exit(1)
 
@@ -52,6 +53,17 @@ def main():
     if args.verify_status not in VERIFY_STATUSES:
         fail("verify_status must be one of %s (got %r)" % (sorted(VERIFY_STATUSES), args.verify_status))
 
+    agent_fail = None
+    if not str(args.run_id).strip(): agent_fail = "run_id must be non-empty"
+    elif not str(args.task_id).strip(): agent_fail = "task_id must be non-empty"
+    elif not str(args.model).strip(): agent_fail = "model must be non-empty"
+    elif not str(args.task_type).strip(): agent_fail = "task_type must be non-empty"
+    elif not str(args.verified_by).strip(): agent_fail = "verified_by must be non-empty"
+    elif args.duration_s < 0: agent_fail = "duration_s must be >= 0"
+    elif args.retry_index < 0: agent_fail = "retry_index must be >= 0"
+    if agent_fail:
+        fail(agent_fail)
+
     runs_dir = Path(args.orchestrator_dir)
     runs_dir.mkdir(parents=True, exist_ok=True)
     runs_path = runs_dir / "RUNS.jsonl"
@@ -59,16 +71,22 @@ def main():
     existing_ids = set()
     if runs_path.exists():
         with runs_path.open("r", encoding="utf-8") as f:
-            for raw in f:
+            for lineno, raw in enumerate(f, 1):
                 line = raw.strip()
                 if not line:
                     continue
                 try:
                     obj = json.loads(line)
                 except json.JSONDecodeError:
-                    continue
-                if isinstance(obj, dict) and "run_id" in obj:
-                    existing_ids.add(obj["run_id"])
+                    # A corrupt telemetry line must never be silently skipped:
+                    # appending past it would hide the damage. Refuse and leave
+                    # the file untouched for investigation.
+                    fail("corrupt JSON at RUNS.jsonl line %d — refusing to append "
+                         "(file left untouched)" % lineno)
+                if not isinstance(obj, dict) or "run_id" not in obj:
+                    fail("record without run_id at RUNS.jsonl line %d — refusing to append "
+                         "(file left untouched)" % lineno)
+                existing_ids.add(obj["run_id"])
     if args.run_id in existing_ids:
         fail("run_id already exists: %r" % args.run_id)
 
