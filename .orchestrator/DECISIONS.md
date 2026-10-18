@@ -117,6 +117,39 @@ One entry per binding decision. Newest at the bottom. Frozen interfaces/names ch
 - Evidence: PREFLIGHT 14/14 · SMOKE 43/43 · GUARD 19/19 · live probe qua launcher thật EXIT=0/PONG.
   Gates verify trước/sau — drift cũ 13/1 + 42/1 → 14/0 + 43/0.
 
+## D-013 (2026-10-18) — ChatGPT architect review (thread 6ad473ee) → roadmap P0–P3 (T-118)
+
+- Brief gửi: §A facts verified (gates 14/14 · 43/43 · 19/19 · sweep model · lane resync D-012) +
+  §B 3 gaps + 5 cross-questions. Full reply: `docs/design/chatgpt-6ad473ee-reply-20261018.md`.
+- **Verdict ChatGPT**: kit operational-ready ("đủ dùng ngay"), chưa hoàn thiện về telemetry /
+  doc-verification / Devin E2E evidence; KHÔNG cần agent-router / model-router LLM / DB telemetry /
+  dashboard — đúng hướng minimal của kit.
+- Quyết định adopt (Hermes đã verify từng claim trên source trước khi adopt):
+  1. **RUNS.jsonl**: scaffold vào bootstrap + append writer thật (run_id duy nhất; retry = run mới,
+     không ghi đè). VERIFICATION.md giữ vai trò ledger nghiệm thu — hai ledger khác trách nhiệm.
+     Telemetry raw local/gitignored (repo public — không đẩy log lên GitHub).
+  2. **verify-doc-refs**: sửa PARSER tại nguồn (phân loại URL / %VAR% Windows path / flag / placeholder;
+     expandvars chỉ biến được phép; ENV_UNRESOLVED ≠ MISSING) + loại self-matching (doc đang check
+     phải nằm ngoài tập token search) + regression test cho verifier. KHÔNG skip-list che lỗi.
+     *(Hermes verify: grep -rl -F -e root search cả doc — self-match thật; line 54 skip `%` nhưng
+     bare-path extractor vẫn bắt substring — đúng mechanism 9 MISSING.)*
+  3. **Model routing**: giữ deepseek-v4.1-flash-free cả 2 lane (verify: PONG); 7 model solid khác
+     → standby pool, chưa auto-production; chọn model sau khi có telemetry task-level (≥10–20 task).
+  4. **Devin E2E**: ĐÁNG burn 1 quota canary — nhưng phải là canary giải quyết bug thật (đề xuất:
+     MSYS wrapper-timeout orphan process trong agent-matrix), scope worktree riêng + dummy child,
+     acceptance chain 5 bước, 1 dispatch duy nhất.
+- **2 gaps ChatGPT phát hiện thêm** (Hermes verify từng cái):
+  A. Log retention: `launch-agent.sh` default log `<workdir>/agent_logs/` → mất khi cleanup
+     worktree. Bootstrap đã có `_logs/` ở worktrees root — cần chuyển default + keep `--log` override.
+  B. Guard scope: hook chỉ gắn `pre_tool_call` của Hermes (fail-open) — KHÔNG tự động chứng minh
+     CLI con (devin/cline/opencode) đi qua guard. Cần verify scope trước khi tuyên bố "guard bảo vệ
+     delegated agents". *(Hermes verify: governance.md line 19 — pre_tool_call matcher terminal ✓;
+     devin chạy `--permission-mode dangerous` trong process riêng ✓.)*
+- **Roadmap**: P0 runtime evidence (RUNS.jsonl + log retention + retry test) → P1 verification
+  correctness (verify-doc-refs parser + regression) → P2 safety + Devin canary → P3 data-driven
+  learning. Mục tiêu cuối: kit đo được chất lượng điều phối, tự điều chỉnh trên verified evidence.
+- Routing P0: OpenCode (scaffold/test) + Cline (launcher integration nếu cần) — theo agent-matrix.
+
 ## D-011 (2026-10-11) — Bản core operating brief mới (brief Sếp 11-10) → docs/prompt-core-2026-10-11.md
 
 - Sếp soạn bản core vận hành "vừa" (219 dòng): Recon-first + thứ tự ưu tiên (Correctness & Quality →

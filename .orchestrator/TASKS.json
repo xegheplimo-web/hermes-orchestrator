@@ -420,6 +420,20 @@
         "stale literals swept: agent-matrix ×3 · installation ×8 · README ×1 · launch/preflight/smoke ×7",
         "remote synced: git ls-remote origin == HEAD"
       ]
+    },
+    {
+      "id": "T-118",
+      "title": "Roadmap P0-P3 tu ChatGPT architect review (D-013)",
+      "status": "done",
+      "agent": "hermes",
+      "created": "2026-10-18",
+      "acceptance": [
+        "Brief §A facts + §B gaps gui ChatGPT (thread 6ad473ee) — readback khớp toàn văn",
+        "Reply hoàn tất (stable), lưu docs/design/chatgpt-6ad473ee-reply-20261018.md",
+        "Claims verify trên source: verify-doc-refs self-match + %VAR mechanism TRUE; governance telemetry-fields TRUE",
+        "D-013 adopt 4 quyết định + roadmap P0-P3; D-011 khôi phục nguyên văn",
+        "Full reply file trong repo (675 dòng), grep P0-P3 hit"
+      ]
     }
   ],
   "backlog": [
