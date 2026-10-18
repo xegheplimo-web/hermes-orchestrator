@@ -77,7 +77,7 @@ bash scripts/new-task-worktree.sh E:/my-project E:/my-project-worktrees T-101 sh
 $EDITOR E:/my-project-worktrees/_prompts/T-101.md
 
 # 3) dispatch (timeout + log + exit marker; --dry-run to inspect)
-bash scripts/launch-agent.sh cline E:/my-project-worktrees/T-101 E:/my-project-worktrees/_prompts/T-101.md --title T-101
+bash scripts/launch-agent.sh devin E:/my-project-worktrees/T-101 E:/my-project-worktrees/_prompts/T-101.md --title T-101
 
 # 4) verify + merge (Hermes)
 cd E:/my-project-worktrees/T-101 && git status && git diff main...HEAD

@@ -28,9 +28,9 @@ T02 + T03 → T05
 ## Agent Assignment
 
 - **T01 → Devin** — reason: architecture/core
-- **T02 → Cline** — reason: isolated backend implementation
-- **T03 → Cline** — reason: isolated UI implementation
-- **T04 → OpenCode** — reason: unit tests
+- **T02 → Devin** — reason: isolated backend implementation
+- **T03 → Devin** — reason: isolated UI implementation
+- **T04 → Devin** — reason: unit tests
 
 ## Parallel Groups
 
