@@ -117,6 +117,26 @@ One entry per binding decision. Newest at the bottom. Frozen interfaces/names ch
 - Evidence: PREFLIGHT 14/14 · SMOKE 43/43 · GUARD 19/19 · live probe qua launcher thật EXIT=0/PONG.
   Gates verify trước/sau — drift cũ 13/1 + 42/1 → 14/0 + 43/0.
 
+## D-014 (2026-10-18) — P0 DONE: runtime evidence + log retention (T-119, OpenCode lane)
+
+- **RUNS.jsonl**: bootstrap scaffold non-destructive; `scripts/record-run.py` append `hermes.run.v1`
+  (validate required fields, dedupe `run_id`, retry = run mới, tool không tự sửa verdict);
+  Hermes là bên ghi verdict cuối. Raw telemetry gitignored (repo public).
+- **Log retention**: launcher default log → `<worktrees-root>/_logs/<title>-<timestamp>.log`
+  (ngoài task worktree, unique per attempt); `--log` override giữ nguyên; fallback
+  `<workdir>/agent_logs/` khi không có sibling `_logs/` (dispatch thẳng project root).
+- **Evidence thật**: 3 run đầu tiên ghi vào RUNS.jsonl — T-119-opencode-01/02 fail do provider
+  500 (deepseek-v4.1-flash-free, provider_failure=true, retry_index 0/1), T-119-opencode-03
+  beam-free PASS (retry_index 2). Gates: smoke 67/67, preflight 14/14, guard 19/19.
+- **Routing lesson (verified)**: opencode lane deepseek fail 2/2 với "Internal Server Error" →
+  escalate standby pool `opencode/beam-free` → PASS. Đúng routing matrix §8 (provider 5xx ≠
+  agent failure; retry 1 lần, fail lần 2 → standby cùng lane).
+- **Deviations từ task card**: agent không commit trong worktree — Hermes review diff, fix
+  2 điểm integration (launcher fallback `_logs`, README count 43→67), commit + merge.
+- **Ngoài scope (ghi nhận, không sửa)**: MSYS path — record-run.py nhận native path
+  (`cygpath -m`) khi gọi từ git-bash; smoke test đã dùng đúng pattern. Docs không cần đổi vì
+  production caller (Hermes) dùng native path.
+
 ## D-013 (2026-10-18) — ChatGPT architect review (thread 6ad473ee) → roadmap P0–P3 (T-118)
 
 - Brief gửi: §A facts verified (gates 14/14 · 43/43 · 19/19 · sweep model · lane resync D-012) +

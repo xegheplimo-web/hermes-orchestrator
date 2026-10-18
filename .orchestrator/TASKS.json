@@ -434,6 +434,21 @@
         "D-013 adopt 4 quyết định + roadmap P0-P3; D-011 khôi phục nguyên văn",
         "Full reply file trong repo (675 dòng), grep P0-P3 hit"
       ]
+    },
+    {
+      "id": "T-119",
+      "title": "P0 Runtime Evidence & Log Retention (OpenCode lane)",
+      "status": "done",
+      "agent": "opencode",
+      "created": "2026-10-18",
+      "acceptance": [
+        "Bootstrap tao RUNS.jsonl non-destructive; chay 2 lan khong mat data",
+        "record-run.py append hermes.run.v1; required fields; duplicate run_id rejected; retry = run moi",
+        "launch-agent.sh default log -> <worktrees-root>/_logs/<title>-<ts>.log (ngoai worktree); --log override giu; fallback agent_logs khi khong co _logs sibling",
+        "smoke-test +24 checks -> 67 passed (idempotent bootstrap, record valid/invalid/dup/retry/failed, log retention, gitignore proof)",
+        "3 runs that duoc ghi: T-119-opencode-01/02 (deepseek provider 500, FAIL) + 03 (beam-free, PASS)",
+        "Hermes verify doc lap: gates 14/14, 67/67, 19/19; merge + push; log ton tai sau khi don worktree"
+      ]
     }
   ],
   "backlog": [
