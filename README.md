@@ -47,7 +47,7 @@ Short path:
 npm install -g cline opencode-ai          # Devin CLI: official installer from cli.devin.ai (see the guide)
 cline auth -p opencode -k <KEY> -m opencode/deepseek-v4.1-flash-free
 git clone https://github.com/xegheplimo-web/hermes-orchestrator E:/hermes-orchestrator
-bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 43 passed / 0 failed
+bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 67 passed / 0 failed
 ```
 
 ## Quickstart — orchestrate a project
@@ -60,6 +60,7 @@ bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 43 passed / 0 fa
 
    Creates `E:/my-project/.orchestrator/` (rendered from templates), `agent_logs/`,
    `E:/my-project-worktrees/{_prompts,_logs}`, and git-inits if needed.
+   Default run logs now live in `<worktrees-root>/_logs/` (survive worktree cleanup); per-worktree `agent_logs/` remains as override target.
 
 2. **Split & assign** per skill `lead-orchestrator` (§3 task card; brief §5–§7 archived): fill `.orchestrator/TASKS.json`, one task = one
    worktree = one branch.

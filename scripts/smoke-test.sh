@@ -93,6 +93,86 @@ case "$DST_OUT" in
     ;;
 esac
 
+
+echo "== 6. bootstrap idempotent (RUNS.jsonl) =="
+P2="$SMOKE/proj2"; WT2="$SMOKE/wt2"
+chk "bootstrap #1 exits 0" bash "$HERE/bootstrap-project.sh" "$P2" --name p2 --worktrees-dir "$WT2"
+RUNS2="$P2/.orchestrator/RUNS.jsonl"
+printf '%s
+' '{"schema":"hermes.run.v1","run_id":"fake-1"}' >> "$RUNS2"
+if [ "$(wc -l < "$RUNS2" | tr -d ' ')" -eq 1 ]; then ok "RUNS has 1 line before 2nd bootstrap"; else bad "RUNS has 1 line before 2nd bootstrap"; fi
+chk "bootstrap #2 exits 0" bash "$HERE/bootstrap-project.sh" "$P2" --name p2 --worktrees-dir "$WT2"
+if [ "$(wc -l < "$RUNS2" | tr -d ' ')" -eq 1 ]; then ok "RUNS still 1 line after 2nd bootstrap"; else bad "RUNS still 1 line after 2nd bootstrap"; fi
+if grep -q 'fake-1' "$RUNS2"; then ok "RUNS fake line retained"; else bad "RUNS fake line retained"; fi
+if grep -qxF '.orchestrator/RUNS.jsonl' "$P2/.gitignore"; then ok ".gitignore has RUNS entry"; else bad ".gitignore has RUNS entry"; fi
+if ( cd "$P2" && git check-ignore .orchestrator/RUNS.jsonl >/dev/null 2>&1 ); then ok "RUNS ignored by git"; else bad "RUNS ignored by git"; fi
+
+echo "== 7. record-run.py =="
+RR="$SMOKE/rr"; mkdir -p "$RR/.orchestrator"
+RRD="$RR/.orchestrator"
+command -v cygpath >/dev/null 2>&1 && RRD="$(cygpath -m "$RRD")"
+REC_SCRIPT="$HERE/record-run.py"
+command -v cygpath >/dev/null 2>&1 && REC_SCRIPT="$(cygpath -m "$REC_SCRIPT")"
+
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r1 --task-id T --agent opencode --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
+RC=$?
+if [ "$RC" -eq 0 ]; then ok "record-run valid exits 0"; else bad "record-run valid exits 0 (rc=$RC)"; fi
+"$PYBIN" - "$RRD/RUNS.jsonl" <<'PYCHK'
+import json,sys
+lines=open(sys.argv[1],encoding='utf-8').read().splitlines()
+assert len(lines)==1, len(lines)
+o=json.loads(lines[0])
+assert o["schema"]=="hermes.run.v1"
+assert o["run_id"]=="r1"
+PYCHK
+if [ $? -eq 0 ]; then ok "valid record parseable + schema"; else bad "valid record parseable + schema"; fi
+
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r2 --agent opencode --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
+RC=$?
+if [ "$RC" -ne 0 ]; then ok "record-run missing field exits non-zero"; else bad "record-run missing field exits non-zero"; fi
+if [ "$(wc -l < "$RRD/RUNS.jsonl" | tr -d ' ')" -eq 1 ]; then ok "missing field leaves file unchanged"; else bad "missing field leaves file unchanged"; fi
+
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r1 --task-id T --agent opencode --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
+RC=$?
+if [ "$RC" -ne 0 ]; then ok "record-run duplicate exits non-zero"; else bad "record-run duplicate exits non-zero"; fi
+if [ "$(wc -l < "$RRD/RUNS.jsonl" | tr -d ' ')" -eq 1 ]; then ok "duplicate leaves line count unchanged"; else bad "duplicate leaves line count unchanged"; fi
+
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r2 --task-id T --agent opencode --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 1 --verified-by hermes >/dev/null 2>&1
+RC=$?
+if [ "$RC" -eq 0 ]; then ok "record-run retry exits 0"; else bad "record-run retry exits 0 (rc=$RC)"; fi
+if [ "$(wc -l < "$RRD/RUNS.jsonl" | tr -d ' ')" -eq 2 ]; then ok "retry yields 2 lines"; else bad "retry yields 2 lines"; fi
+"$PYBIN" - "$RRD/RUNS.jsonl" <<'PYCHK'
+import json,sys
+ids=[json.loads(x)["run_id"] for x in open(sys.argv[1],encoding='utf-8').read().splitlines()]
+assert len(set(ids))==2
+PYCHK
+if [ $? -eq 0 ]; then ok "retry yields 2 distinct run_ids"; else bad "retry yields 2 distinct run_ids"; fi
+
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r3 --task-id T --agent opencode --model m --task-type small-fix --duration-s 10 --exit-code 7 --provider-failure false --verify-status FAIL --retry-index 0 --verified-by hermes >/dev/null 2>&1
+RC=$?
+if [ "$RC" -eq 0 ]; then ok "record-run failed run exits 0"; else bad "record-run failed run exits 0 (rc=$RC)"; fi
+"$PYBIN" - "$RRD/RUNS.jsonl" <<'PYCHK'
+import json,sys
+o=json.loads(open(sys.argv[1],encoding='utf-8').read().splitlines()[-1])
+assert o["exit_code"]==7 and o["verify_status"]=="FAIL"
+PYCHK
+if [ $? -eq 0 ]; then ok "failed run record keeps exit_code"; else bad "failed run record keeps exit_code"; fi
+
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r4 --task-id T --agent nope --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
+RC=$?
+if [ "$RC" -ne 0 ]; then ok "record-run bad agent exits non-zero"; else bad "record-run bad agent exits non-zero"; fi
+if [ "$(wc -l < "$RRD/RUNS.jsonl" | tr -d ' ')" -eq 3 ]; then ok "bad agent leaves line count unchanged"; else bad "bad agent leaves line count unchanged"; fi
+
+echo "== 8. log retention =="
+WT3="$SMOKE/wt3"; mkdir -p "$WT3/T-101" "$WT3/_logs"
+PROMPT3="$SMOKE/prompt3.md"; printf '# p
+' > "$PROMPT3"
+OUT1="$(bash "$HERE/launch-agent.sh" opencode "$WT3/T-101" "$PROMPT3" --title T-101 --dry-run 2>&1)"
+OUT2="$(bash "$HERE/launch-agent.sh" opencode "$WT3/T-101" "$PROMPT3" --title T-101 --dry-run 2>&1)"
+case "$OUT1" in *"$WT3/_logs/"*) ok "dry-run log path in _logs" ;; *) bad "dry-run log path in _logs" ;; esac
+case "$OUT1" in *"$WT3/T-101/agent_logs"*) bad "dry-run log must not be in worktree agent_logs" ;; *) ok "dry-run log not in worktree" ;; esac
+if [ "$OUT1" != "$OUT2" ]; then ok "two dry-runs produce distinct output"; else bad "two dry-runs produce distinct output"; fi
+
 echo
 if [ "$FAIL" -eq 0 ]; then
   echo "SMOKE: ALL GREEN — $PASS passed, 0 failed"
