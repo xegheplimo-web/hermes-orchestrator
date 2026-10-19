@@ -449,6 +449,20 @@
         "3 runs that duoc ghi: T-119-opencode-01/02 (deepseek provider 500, FAIL) + 03 (beam-free, PASS)",
         "Hermes verify doc lap: gates 14/14, 67/67, 19/19; merge + push; log ton tai sau khi don worktree"
       ]
+    },
+    {
+      "id": "T-120",
+      "title": "Document Reference Verification Correctness (verify-doc-refs.py)",
+      "status": "done",
+      "agent": "openccline",
+      "created": "2026-10-18",
+      "acceptance": [
+        "P1-A refs mode: no self-match (--exclude=*.md + --exclude=<doc>); fake flag only in doc -> FAIL + MISSING",
+        "P1-B refs mode: classify url/env/path before existence; URL not cut to BARE_PATH; os.path.expandvars; ENV_UNRESOLVED != MISSING",
+        "negative tests: (a) fake flag FAIL+MISSING (b) URL not MISSING (d) ENV_UNRESOLVED (e) missing path FAIL+MISSING",
+        "tokens mode: grep -rl --exclude=*.md --exclude=<doc>; source has token -> PASS (no self-match)",
+        "smoke 84/84 incl 12 new verify-doc-refs correctness checks; full gates green (smoke 84 / preflight 7 / guard 19 / devin doctor 2-2); merge 0-conflict; clean tree (see VERIFICATION.md)"
+      ]
     }
   ],
   "backlog": [
