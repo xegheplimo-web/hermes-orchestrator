@@ -283,6 +283,8 @@ Dùng dữ liệu này để điều chỉnh routing.
 
 Ví dụ:
 
+> **Pre-D-015 historical lessons** (Cline/OpenCode coding lanes retired in D-015; Devin CLI is sole coding agent). Retained for context.
+
 ```text
 OpenCode:
 docs/tests/light cleanup → nhanh + ổn định

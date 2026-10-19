@@ -26,12 +26,12 @@ quality:
 
 routing:
   hard:   { agent: devin }     # architecture, core, hard bugs, refactor
-  medium: { agent: cline }     # features, API/UI, modules, integration
-  light:  { agent: opencode }  # boilerplate, tests, docs, lint
+  medium: { agent: devin }    # features, API/UI, modules, integration
+  light:  { agent: devin }  # boilerplate, tests, docs, lint
 
 repair:
   same_agent_max_attempts: 2
-  escalation: true             # fail #2 -> stronger agent + RESCUE BRIEF
+  escalation: true             # fail #2 -> Hermes self-help + RESCUE BRIEF (no agent escalation, D-015)
   micro_fail_fix_inline: true  # trivial (<5') -> orchestrator fixes directly
 
 integration:

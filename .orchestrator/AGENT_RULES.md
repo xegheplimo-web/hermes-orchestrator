@@ -29,7 +29,7 @@
 
 ## 5. Escalation
 
-- Same task failing twice → Hermes upgrades the agent (OpenCode/Cline → Devin).
+- Same task failing twice → Hermes takes over (Devin → Hermes self-help; no agent escalation, D-015).
 - If blocked by missing permissions/resources, state it clearly in the report; do not work around
   outside scope.
 

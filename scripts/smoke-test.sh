@@ -59,22 +59,24 @@ chk "worktree dir exists" test -d "$WT/T-101"
 chk "worktree has seed file" test -f "$WT/T-101/seed.txt"
 chkc "branch task/T-101-smoke-task exists" "cd '$P' && git branch --list 'task/T-101-smoke-task' | grep -q 'T-101'"
 
-echo "== 4. launch-agent.sh (dry-run for all three agents) =="
+echo "== 4. launch-agent.sh dry-run (devin only, D-015) =="
 echo "# smoke prompt" > "$WT/_prompts/T-101.md"
 
-OUT="$(bash "$HERE/launch-agent.sh" cline "$WT/T-101" "$WT/_prompts/T-101.md" --title T-101 --dry-run 2>&1)"; RC=$?
-[ "$RC" -eq 0 ] && ok "dry-run cline exits 0" || bad "dry-run cline exits 0 (rc=$RC)"
-chk_contains "dry-run cline shows verified command" "cline -P opencode -m opencode/deepseek-v4.1-flash-free" "$OUT"
-
-OUT="$(bash "$HERE/launch-agent.sh" opencode "$WT/T-101" "$WT/_prompts/T-101.md" --title T-101 --dry-run 2>&1)"; RC=$?
-[ "$RC" -eq 0 ] && ok "dry-run opencode exits 0" || bad "dry-run opencode exits 0 (rc=$RC)"
-chk_contains "dry-run opencode shows verified command" "opencode run --model opencode/deepseek-v4.1-flash-free" "$OUT"
-
+# D-015: only devin is a coding lane
 OUT="$(bash "$HERE/launch-agent.sh" devin "$WT/T-101" "$WT/_prompts/T-101.md" --title T-101 --dry-run 2>&1)"; RC=$?
 [ "$RC" -eq 0 ] && ok "dry-run devin exits 0" || bad "dry-run devin exits 0 (rc=$RC)"
-chk_contains "dry-run devin shows canonical form" "devin --respect-workspace-trust=false --permission-mode dangerous -p --prompt-file" "$OUT"
+chk_contains "dry-run devin shows canonical form" "devin --respect-workspace-trust=false --permission-mode dangerous --model swe-2-max -p --prompt-file" "$OUT"
 
 chk "dry-run created no log" test ! -f "$WT/T-101/agent_logs/T-101.log"
+
+# D-015: cline and opencode must be REJECTED (exit 2, no execution)
+OUT="$(bash "$HERE/launch-agent.sh" cline "$WT/T-101" "$WT/_prompts/T-101.md" --title T-101 --dry-run 2>&1)"; RC=$?
+if [ "$RC" -eq 2 ]; then ok "cline rejected (exit 2)"; else bad "cline rejected (exit 2) (rc=$RC)"; fi
+chk_contains "cline rejection mentions D-015" "D-015" "$OUT"
+
+OUT="$(bash "$HERE/launch-agent.sh" opencode "$WT/T-101" "$WT/_prompts/T-101.md" --title T-101 --dry-run 2>&1)"; RC=$?
+if [ "$RC" -eq 2 ]; then ok "opencode rejected (exit 2)"; else bad "opencode rejected (exit 2) (rc=$RC)"; fi
+chk_contains "opencode rejection mentions D-015" "D-015" "$OUT"
 
 echo "== 5. doc-stats.py self-test =="
 DST_OUT="$(bash "$HERE/test-doc-stats.sh" 2>&1)"
@@ -114,7 +116,7 @@ command -v cygpath >/dev/null 2>&1 && RRD="$(cygpath -m "$RRD")"
 REC_SCRIPT="$HERE/record-run.py"
 command -v cygpath >/dev/null 2>&1 && REC_SCRIPT="$(cygpath -m "$REC_SCRIPT")"
 
-"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r1 --task-id T --agent opencode --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r1 --task-id T --agent devin --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
 RC=$?
 if [ "$RC" -eq 0 ]; then ok "record-run valid exits 0"; else bad "record-run valid exits 0 (rc=$RC)"; fi
 "$PYBIN" - "$RRD/RUNS.jsonl" <<'PYCHK'
@@ -127,17 +129,17 @@ assert o["run_id"]=="r1"
 PYCHK
 if [ $? -eq 0 ]; then ok "valid record parseable + schema"; else bad "valid record parseable + schema"; fi
 
-"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r2 --agent opencode --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r2 --agent devin --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
 RC=$?
 if [ "$RC" -ne 0 ]; then ok "record-run missing field exits non-zero"; else bad "record-run missing field exits non-zero"; fi
 if [ "$(wc -l < "$RRD/RUNS.jsonl" | tr -d ' ')" -eq 1 ]; then ok "missing field leaves file unchanged"; else bad "missing field leaves file unchanged"; fi
 
-"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r1 --task-id T --agent opencode --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r1 --task-id T --agent devin --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
 RC=$?
 if [ "$RC" -ne 0 ]; then ok "record-run duplicate exits non-zero"; else bad "record-run duplicate exits non-zero"; fi
 if [ "$(wc -l < "$RRD/RUNS.jsonl" | tr -d ' ')" -eq 1 ]; then ok "duplicate leaves line count unchanged"; else bad "duplicate leaves line count unchanged"; fi
 
-"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r2 --task-id T --agent opencode --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 1 --verified-by hermes >/dev/null 2>&1
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r2 --task-id T --agent devin --model m --task-type small-fix --duration-s 10 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 1 --verified-by hermes >/dev/null 2>&1
 RC=$?
 if [ "$RC" -eq 0 ]; then ok "record-run retry exits 0"; else bad "record-run retry exits 0 (rc=$RC)"; fi
 if [ "$(wc -l < "$RRD/RUNS.jsonl" | tr -d ' ')" -eq 2 ]; then ok "retry yields 2 lines"; else bad "retry yields 2 lines"; fi
@@ -148,7 +150,7 @@ assert len(set(ids))==2
 PYCHK
 if [ $? -eq 0 ]; then ok "retry yields 2 distinct run_ids"; else bad "retry yields 2 distinct run_ids"; fi
 
-"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r3 --task-id T --agent opencode --model m --task-type small-fix --duration-s 10 --exit-code 7 --provider-failure false --verify-status FAIL --retry-index 0 --verified-by hermes >/dev/null 2>&1
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r3 --task-id T --agent devin --model m --task-type small-fix --duration-s 10 --exit-code 7 --provider-failure false --verify-status FAIL --retry-index 0 --verified-by hermes >/dev/null 2>&1
 RC=$?
 if [ "$RC" -eq 0 ]; then ok "record-run failed run exits 0"; else bad "record-run failed run exits 0 (rc=$RC)"; fi
 "$PYBIN" - "$RRD/RUNS.jsonl" <<'PYCHK'
@@ -164,10 +166,10 @@ if [ "$RC" -ne 0 ]; then ok "record-run bad agent exits non-zero"; else bad "rec
 if [ "$(wc -l < "$RRD/RUNS.jsonl" | tr -d ' ')" -eq 3 ]; then ok "bad agent leaves line count unchanged"; else bad "bad agent leaves line count unchanged"; fi
 
 # hardening: negative numbers rejected
-"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r5 --task-id T --agent opencode --model m --task-type small-fix --duration-s -5 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r5 --task-id T --agent devin --model m --task-type small-fix --duration-s -5 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
 RC=$?
 if [ "$RC" -ne 0 ]; then ok "negative duration rejected"; else bad "negative duration rejected"; fi
-"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r6 --task-id T --agent opencode --model m --task-type small-fix --duration-s 1 --exit-code 0 --provider-failure false --verify-status PASS --retry-index -2 --verified-by hermes >/dev/null 2>&1
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD" --run-id r6 --task-id T --agent devin --model m --task-type small-fix --duration-s 1 --exit-code 0 --provider-failure false --verify-status PASS --retry-index -2 --verified-by hermes >/dev/null 2>&1
 RC=$?
 if [ "$RC" -ne 0 ]; then ok "negative retry_index rejected"; else bad "negative retry_index rejected"; fi
 if [ "$(wc -l < "$RRD/RUNS.jsonl" | tr -d ' ')" -eq 3 ]; then ok "negative values leave file unchanged"; else bad "negative values leave file unchanged"; fi
@@ -176,7 +178,7 @@ if [ "$(wc -l < "$RRD/RUNS.jsonl" | tr -d ' ')" -eq 3 ]; then ok "negative value
 RRD2="$RR/" ; mkdir -p "$RR/x"; RR2="$RR/x/.orchestrator"; mkdir -p "$RR2"
 printf '%s\n' 'not-json-at-all{{{' > "$RR2/RUNS.jsonl"
 RRD2="$(command -v cygpath >/dev/null 2>&1 && cygpath -m "$RR2" || printf '%s' "$RR2")"
-"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD2" --run-id r7 --task-id T --agent opencode --model m --task-type small-fix --duration-s 1 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
+"$PYBIN" "$REC_SCRIPT" --orchestrator-dir "$RRD2" --run-id r7 --task-id T --agent devin --model m --task-type small-fix --duration-s 1 --exit-code 0 --provider-failure false --verify-status PASS --retry-index 0 --verified-by hermes >/dev/null 2>&1
 RC=$?
 if [ "$RC" -ne 0 ]; then ok "corrupt JSONL line blocks append"; else bad "corrupt JSONL line blocks append"; fi
 if [ "$(wc -l < "$RR2/RUNS.jsonl" | tr -d ' ')" -eq 1 ]; then ok "corrupt file left untouched"; else bad "corrupt file left untouched"; fi
@@ -185,11 +187,86 @@ echo "== 8. log retention =="
 WT3="$SMOKE/wt3"; mkdir -p "$WT3/T-101" "$WT3/_logs"
 PROMPT3="$SMOKE/prompt3.md"; printf '# p
 ' > "$PROMPT3"
-OUT1="$(bash "$HERE/launch-agent.sh" opencode "$WT3/T-101" "$PROMPT3" --title T-101 --dry-run 2>&1)"
-OUT2="$(bash "$HERE/launch-agent.sh" opencode "$WT3/T-101" "$PROMPT3" --title T-101 --dry-run 2>&1)"
+OUT1="$(bash "$HERE/launch-agent.sh" devin "$WT3/T-101" "$PROMPT3" --title T-101 --dry-run 2>&1)"
+OUT2="$(bash "$HERE/launch-agent.sh" devin "$WT3/T-101" "$PROMPT3" --title T-101 --dry-run 2>&1)"
 case "$OUT1" in *"$WT3/_logs/"*) ok "dry-run log path in _logs" ;; *) bad "dry-run log path in _logs" ;; esac
 case "$OUT1" in *"$WT3/T-101/agent_logs"*) bad "dry-run log must not be in worktree agent_logs" ;; *) ok "dry-run log not in worktree" ;; esac
 if [ "$OUT1" != "$OUT2" ]; then ok "two dry-runs produce distinct output"; else bad "two dry-runs produce distinct output"; fi
+
+
+echo "== 9. verify-doc-refs correctness =="
+VDR_SCRIPT="$HERE/verify-doc-refs.py"
+VDRDIR="$(mktemp -d)"
+if command -v cygpath >/dev/null 2>&1; then
+  VDR_SCRIPT_W="$(cygpath -m "$VDR_SCRIPT")"
+  VDRDIR_W="$(cygpath -m "$VDRDIR")"
+else
+  VDR_SCRIPT_W="$VDR_SCRIPT"
+  VDRDIR_W="$VDRDIR"
+fi
+mkdir -p "$VDRDIR/src" "$VDRDIR/scripts"
+printf -- '--real-flag here
+' > "$VDRDIR/src/real.sh"
+printf 'envfile
+' > "$VDRDIR/env-exists.txt"
+export VDR_TMP="$VDRDIR_W"
+
+# (a) fake flag only in doc -> FAIL
+printf '%s
+' 'Flag: `--fake-flag-987`' > "$VDRDIR/doc-a.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_A_W="$(cygpath -m "$VDRDIR/doc-a.md")"; else DOC_A_W="$VDRDIR/doc-a.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_A_W" --root "$VDRDIR_W" --mode tokens 2>&1)"; RC=$?
+if [ "$RC" -ne 0 ]; then ok "verify-doc-refs: (a) fake flag only in doc -> FAIL"; else bad "verify-doc-refs: (a) fake flag only in doc -> FAIL (rc=$RC)"; fi
+case "$OUT" in *"MISSING: --fake-flag-987"*) ok "verify-doc-refs: (a) reports MISSING --fake-flag-987" ;; *) bad "verify-doc-refs: (a) missing marker"; echo "$OUT" | tail -3 ;; esac
+
+# (g) source really contains flag -> PASS
+printf '%s
+' 'Flag: `--real-flag`' > "$VDRDIR/doc-g.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_G_W="$(cygpath -m "$VDRDIR/doc-g.md")"; else DOC_G_W="$VDRDIR/doc-g.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_G_W" --root "$VDRDIR_W" --mode tokens 2>&1)"; RC=$?
+if [ "$RC" -eq 0 ]; then ok "verify-doc-refs: (g) source contains flag -> PASS"; else bad "verify-doc-refs: (g) source contains flag -> PASS (rc=$RC)"; echo "$OUT" | tail -3; fi
+
+# (d)+(f) existing path + :line / :start-end suffix -> PASS
+printf '%s
+' 'Path `src/real.sh` and `src/real.sh:10` and `src/real.sh:1-5`' > "$VDRDIR/doc-d.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_D_W="$(cygpath -m "$VDRDIR/doc-d.md")"; else DOC_D_W="$VDRDIR/doc-d.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_D_W" --root "$VDRDIR_W" --mode refs 2>&1)"; RC=$?
+if [ "$RC" -eq 0 ]; then ok "verify-doc-refs: (d) existing path -> PASS"; else bad "verify-doc-refs: (d) existing path -> PASS (rc=$RC)"; echo "$OUT" | tail -3; fi
+
+# (e) non-existent path -> FAIL
+printf '%s
+' 'Path `scripts/khong-ton-tai-xyz.sh`' > "$VDRDIR/doc-e.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_E_W="$(cygpath -m "$VDRDIR/doc-e.md")"; else DOC_E_W="$VDRDIR/doc-e.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_E_W" --root "$VDRDIR_W" --mode refs 2>&1)"; RC=$?
+if [ "$RC" -ne 0 ]; then ok "verify-doc-refs: (e) missing path -> FAIL"; else bad "verify-doc-refs: (e) missing path -> FAIL (rc=$RC)"; fi
+case "$OUT" in *"MISSING: scripts/khong-ton-tai-xyz.sh"*) ok "verify-doc-refs: (e) reports MISSING" ;; *) bad "verify-doc-refs: (e) missing marker" ;; esac
+
+# URL -> not MISSING
+printf '%s
+' 'URL `https://devin.ai/install` and devin.ai/cli/setup.ps1' > "$VDRDIR/doc-u.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_U_W="$(cygpath -m "$VDRDIR/doc-u.md")"; else DOC_U_W="$VDRDIR/doc-u.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_U_W" --root "$VDRDIR_W" --mode refs 2>&1)"; RC=$?
+if [ "$RC" -eq 0 ]; then ok "verify-doc-refs: URL doc -> exit 0"; else bad "verify-doc-refs: URL doc -> exit 0 (rc=$RC)"; echo "$OUT" | tail -3; fi
+case "$OUT" in *"MISSING: https://devin.ai/install"*|*"MISSING: devin.ai/cli/setup.ps1"*) bad "verify-doc-refs: URL falsely MISSING" ;; *) ok "verify-doc-refs: URL not reported MISSING" ;; esac
+
+# env path exists -> not MISSING
+printf '%s
+' 'Env `%VDR_TMP%/env-exists.txt`' > "$VDRDIR/doc-v.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_V_W="$(cygpath -m "$VDRDIR/doc-v.md")"; else DOC_V_W="$VDRDIR/doc-v.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_V_W" --root "$VDRDIR_W" --mode refs 2>&1)"; RC=$?
+if [ "$RC" -eq 0 ]; then ok "verify-doc-refs: env-existing doc -> exit 0"; else bad "verify-doc-refs: env-existing doc -> exit 0 (rc=$RC)"; echo "$OUT" | tail -3; fi
+case "$OUT" in *"MISSING: "*VDR_TMP*) bad "verify-doc-refs: env path falsely MISSING" ;; *) ok "verify-doc-refs: env path not MISSING" ;; esac
+
+# env path unresolved -> ENV_UNRESOLVED, not MISSING
+printf '%s
+' 'Env `%VDR_TMP_UNSET%/nope.txt`' > "$VDRDIR/doc-w.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_W_W="$(cygpath -m "$VDRDIR/doc-w.md")"; else DOC_W_W="$VDRDIR/doc-w.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_W_W" --root "$VDRDIR_W" --mode refs 2>&1)"; RC=$?
+case "$OUT" in *"ENV_UNRESOLVED: "*VDR_TMP_UNSET*) ok "verify-doc-refs: unresolved env -> ENV_UNRESOLVED" ;; *) bad "verify-doc-refs: unresolved env marker missing"; echo "$OUT" | tail -3 ;; esac
+case "$OUT" in *"MISSING: "*VDR_TMP_UNSET*) bad "verify-doc-refs: unresolved env falsely MISSING" ;; *) ok "verify-doc-refs: unresolved env not MISSING" ;; esac
+
+rm -rf "$VDRDIR"
+unset VDR_TMP
 
 echo
 if [ "$FAIL" -eq 0 ]; then

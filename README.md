@@ -1,6 +1,6 @@
 # Hermes — Lead Orchestrator kit
 
-A reusable control tower for running **Devin CLI + Cline + OpenCode** as one verified software
+A reusable control tower for running **Devin CLI** as the sole coding agent, as one verified software
 team under **Hermes as Lead Orchestrator**: Analyze → Split → Assign → Execute → Verify →
 Fix/Reassign → Integrate → Final Verify. Core law: *an agent saying "done" is not DONE* — only
 orchestrator verification makes DONE.
@@ -31,7 +31,7 @@ the Hermes skill `lead-orchestrator`.
 | `templates/control-plane/` | Starter `.orchestrator/` files for a new project (`{{PROJECT_NAME}}`, `{{DATE}}`). |
 | `scripts/bootstrap-project.sh` | Scaffold a new orchestrated project (control plane + agent work dirs + .gitignore). |
 | `scripts/new-task-worktree.sh` | Create `task/<id>-<slug>` worktree for a task. |
-| `scripts/launch-agent.sh` | Launch cline/opencode/devin (CLI lanes) on a prompt file: timeout + log + exit marker (`--dry-run`). |
+| `scripts/launch-agent.sh` | Launch Devin CLI (sole coding lane, D-015) on a prompt file: timeout + log + exit marker (`--dry-run`). |
 | `scripts/smoke-test.sh` | Self-test for all scripts (throwaway project in a temp dir), incl. the doc-stats self-test. |
 | `scripts/preflight.sh` | One-command §9 convention re-check: CLI versions + 3 launch dry-runs + key-flag greps + `devin doctor` + banned-token drift scan (§3b–§3c); exit ≠ 0 = drift. |
 | `scripts/doc-stats.py` | Documentation & roadmap statistics for a project: inventory, staleness vs HEAD, checklist progress, control-plane audit (`--json`, `--strict`). |
@@ -44,10 +44,9 @@ kit self-test → verification checklist): [`docs/installation.md`](docs/install
 Short path:
 
 ```bash
-npm install -g cline opencode-ai          # Devin CLI: official installer from cli.devin.ai (see the guide)
-cline auth -p opencode -k <KEY> -m opencode/deepseek-v4.1-flash-free
+curl -fsSL https://cli.devin.ai/install.sh | bash    # Devin CLI installer
 git clone https://github.com/xegheplimo-web/hermes-orchestrator E:/hermes-orchestrator
-bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 67 passed / 0 failed
+bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 72 passed / 0 failed
 ```
 
 ## Quickstart — orchestrate a project
@@ -80,7 +79,7 @@ bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 67 passed / 0 fa
 
 - One task = one worktree = one branch (`task/<id>-<slug>`); never two agents in one scope.
 - Agents write files; **Hermes owns git** (commit / merge / push).
-- Escalation ladder: OpenCode → Cline → Devin (2 failures → escalate; no third attempt).
+- Devin failures → escalate to Hermes self-help (2 failures → escalate; no third automated attempt).
 - Repo artifacts in English; reports to the user in Vietnamese.
 
 ## Self-test

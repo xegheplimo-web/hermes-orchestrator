@@ -1,6 +1,7 @@
 > **Archive note (2026-10-08):** đây là prompt gốc đầy đủ 2026-10-06 (đã chuyển khỏi `PROMPT.md`).
 > `PROMPT.md` giờ là bản ngắn (role + mandate → load skill `lead-orchestrator`).
-> Canonical operating procedure = skill `lead-orchestrator`; các tham chiếu "§N" trong templates/docs trỏ về đây.
+|> Canonical operating procedure = skill `lead-orchestrator`; các tham chiếu "§N" trong templates/docs trỏ về đây.
+|> **D-015 note (2026-10-18):** This snapshot predates D-015. The active agent pool is now **Devin CLI only** (Cline/OpenCode retained for non-coding CLI tasks). See `docs/agent-matrix.md` + `lead-orchestrator` §2 for current routing.
 
 ---
 

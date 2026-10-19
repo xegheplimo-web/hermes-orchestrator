@@ -1,7 +1,7 @@
 # PROJECT STATE — hermes-orchestrator
 
 **Project**: Lead Orchestrator kit — canonical orchestrator prompt + templates + control-plane scaffold + agent launch scripts.
-**Philosophy**: Hermes = reviewer + QA gate + integration owner; Devin / Cline / OpenCode = workers.
+**Philosophy**: Hermes = orchestrator + reviewer + QA gate + integration owner; Devin = sole coding agent (D-015).
 **Repo**: `E:\hermes-orchestrator` → <https://github.com/xegheplimo-web/hermes-orchestrator> (public) · **Worktrees**: `E:\hermes-orchestrator-worktrees\<TASK-ID>`
 
 ## Current milestone

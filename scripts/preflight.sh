@@ -16,7 +16,7 @@ TMP="$(mktemp -d 2>/dev/null)" || { TMP="${TMPDIR:-/tmp}/preflight.$$"; mkdir -p
 trap 'rm -rf "$TMP"' EXIT
 printf 'preflight — reply with exactly PREFLIGHT_OK\n' > "$TMP/pf.md"
 
-echo "== 1. agent CLIs on PATH (versions informational) =="
+echo "== 1. agent CLIs on PATH (informational — Devin required) =="
 for c in cline opencode devin; do
   if command -v "$c" >/dev/null 2>&1; then
     echo "  $c: $("$c" --version 2>/dev/null | head -1)"
@@ -37,9 +37,7 @@ dr() { # dr <agent> <needle>...
   for n in "$@"; do want "$agent" "$n" "$out" || miss=1; done
   [ "$miss" -eq 0 ] && ok "$agent dry-run matches §9"
 }
-dr cline    "-P opencode" "-m opencode/deepseek-v4.1-flash-free" "-t 1380" "timeout 1500"
-dr opencode "opencode run --model opencode/deepseek-v4.1-flash-free" "--title" "timeout 1500"
-dr devin    "devin --respect-workspace-trust=false --permission-mode dangerous -p --prompt-file" "timeout 2400"
+dr devin    "devin --respect-workspace-trust=false --permission-mode dangerous --model swe-2-max -p --prompt-file" "timeout 2400"
 
 echo "== 3. key flags still exist in live CLIs =="
 flag() { # flag <desc> <needle> <cmd...>
@@ -50,15 +48,10 @@ flag() { # flag <desc> <needle> <cmd...>
     bad "$desc (no \"$needle\" in help output)"
   fi
 }
-flag "cline help: --provider" "--provider" cline --help
-flag "cline help: --model" "--model" cline --help
-flag "cline help: --timeout" "--timeout" cline --help
-flag "opencode run help: --model" "--model" opencode run --help
-flag "opencode run help: --title" "--title" opencode run --help
-flag "opencode run help: --variant" "--variant" opencode run --help
 flag "devin help: --permission-mode" "--permission-mode" devin --help
 flag "devin help: --respect-workspace-trust" "--respect-workspace-trust" devin --help
 flag "devin help: --prompt-file" "--prompt-file" devin --help
+flag "devin help: --model" "--model" devin --help
 
 echo "== 3b. Devin CLI health =="
 if timeout 60 devin doctor >"$TMP/doctor.out" 2>&1; then
@@ -82,7 +75,8 @@ fi
 
 echo "== 4. reminders =="
 echo "  - after any CLI upgrade: sync version rows in docs/installation.md (§2 · §7 · §9)"
-echo "  - live smokes: say <AGENT>_SMOKE_OK (Devin CLI is quota-billed → devin doctor + dry-run instead)"
+echo "  - live smoke: devin is quota-billed -> devin doctor + dry-run instead of SMOKE_OK"
+echo "  - Cline/OpenCode retained on disk for non-coding CLI tasks; removed from coding roster (D-015)"
 echo
 echo "PREFLIGHT: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]
