@@ -168,7 +168,7 @@ One entry per binding decision. Newest at the bottom. Frozen interfaces/names ch
 - **Roadmap**: P0 runtime evidence (RUNS.jsonl + log retention + retry test) → P1 verification
   correctness (verify-doc-refs parser + regression) → P2 safety + Devin canary → P3 data-driven
   learning. Mục tiêu cuối: kit đo được chất lượng điều phối, tự điều chỉnh trên verified evidence.
-- Routing P0: OpenCode (scaffold/test) + Cline (launcher integration nếu cần) — theo agent-matrix.
+- Routing P0: Devin (sole coding lane, D-015).
 
 ## D-011 (2026-10-11) — Bản core operating brief mới (brief Sếp 11-10) → docs/prompt-core-2026-10-11.md
 
@@ -181,3 +181,27 @@ One entry per binding decision. Newest at the bottom. Frozen interfaces/names ch
 - Quyết định: PROMPT.md giữ nguyên (D-009 còn hiệu lực — prompt ngắn, skill canonical); bản mới lưu docs
   làm tham chiếu. Nếu Sếp chốt dùng làm prompt chính → cập nhật PROMPT.md + D thay thế D-009.
 - Reword bắt buộc khi lưu: tên lane cũ → `Devin via MCP` (tránh token cấm — preflight §3c).
+
+## D-015 (2026-10-18) — Devin CLI is the sole coding agent
+
+**Decision**: Devin CLI is the sole coding agent. Cline and OpenCode CLIs remain installed
+on disk for non-coding CLI tasks (auth, probes) but are removed from the coding roster,
+routing, retry, and fallback.
+
+**Rationale**: Single-agent discipline eliminates routing complexity, reduces surface area,
+and avoids cross-agent escalation logic. Devin CLI (SWE-2) covers all difficulty levels.
+
+**Changed**:
+- `scripts/launch-agent.sh`: reject `cline`/`opencode` tokens (exit 2, D-015 message);
+  default `--model swe-2-max`.
+- `scripts/preflight.sh`: Devin-only dry-run + flag checks; removed cline/opencode version checks.
+- `scripts/smoke-test.sh`: Devin dry-run + rejection tests; all `record-run.py` invocations use `--agent devin`.
+- `scripts/record-run.py`: `AGENTS = {"devin", "hermes"}`.
+- `docs/agent-matrix.md`: full rewrite — Devin sole lane; no escalation ladder.
+- `docs/installation.md`: §2 → Devin install; Cline/OpenCode → retained non-coding notes;
+  §6/§7/§9 updated.
+- `PROMPT.md`, `README.md`: Devin-only agent pool, routing, install, self-test count (72).
+- `lead-orchestrator` skill: §2/§3.5/§21/§22/§26 routing → Devin-only.
+- `.orchestrator/INTERFACES.md`, `AGENT_RULES.md`, `PROJECT_STATE.md`: Devin-only contracts.
+
+**Verification**: `bash scripts/smoke-test.sh` → 72/72 · `bash scripts/preflight.sh` → 7/7 · `devin doctor` clean.

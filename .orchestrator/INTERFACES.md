@@ -27,13 +27,13 @@ bash scripts/new-task-worktree.sh <project-dir> <worktrees-root> <task-id> <slug
 ## scripts/launch-agent.sh
 
 ```text
-bash scripts/launch-agent.sh <cline|opencode|devin> <workdir> <prompt-file> [--title T] [--log L] [--model M] [--timeout S] [--dry-run]
+bash scripts/launch-agent.sh devin <workdir> <prompt-file> [--title T] [--log L] [--model M] [--timeout S] [--dry-run]  # cline/opencode rejected (D-015)
 ```
 
 - Runs the agent CLI with the prompt read from file; wall-clock `timeout` guard; stdout+stderr to
   log; appends `EXIT=<code>` to the log (and prints it).
 - `--dry-run` prints the exact command without running (no prechecks, no log, no side effects).
-- Exit code = the agent's own exit code. Defaults: cline/opencode timeout 1500s, devin 2400s;
+- Exit code = the agent's own exit code. Defaults: devin timeout 2400s;
   default log `<workdir>/agent_logs/<title>.log`; default models per `docs/agent-matrix.md`.
 
 ## scripts/smoke-test.sh
@@ -43,5 +43,5 @@ bash scripts/smoke-test.sh
 ```
 
 - Self-test: `bash -n` on all scripts; throwaway bootstrap in a temp dir; assertions on control
-  plane, worktrees, git init; worktree creation; dry-run commands for all three agents.
+  plane, worktrees, git init; worktree creation; dry-run command for devin (cline/opencode rejected, D-015).
 - Exit 0 iff all checks pass. Prints a PASS/FAIL line per check + a summary count.

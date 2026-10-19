@@ -2,7 +2,7 @@
 
 > **Vai trò:** System / Project Orchestrator Prompt cho Hermes.
 > **Nguồn:** brief của Sếp. Bản đầy đủ 2026-10-06: `docs/prompt-full-2026-10-06.md` (archive — tham chiếu "§N" trong templates/docs). Thay đổi quyết định: `.orchestrator/DECISIONS.md`.
-> **Agent pool (máy này):** Hard → **Devin CLI** · Medium → **Cline (OpenCode Go)** · Light → **OpenCode (Muse Spark)** · Orchestration / verification / git → **Hermes** — chi tiết: `docs/agent-matrix.md`.
+| **Agent pool (máy này):** Hard → **Devin CLI** (sole coding lane, D-015) · Orchestration / verification / git → **Hermes** — chi tiết: `docs/agent-matrix.md`.
 
 ## 0. CORE VẬN HÀNH (bản ngắn — Sếp chốt 2026-10-08)
 

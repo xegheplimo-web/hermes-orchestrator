@@ -55,8 +55,8 @@ Không bỏ qua Recon hoặc Final Verify vì task có vẻ đơn giản.
 - **Devin luôn có nghĩa là Devin CLI.**
 - Không sử dụng Devin via MCP, REST/API cloud hoặc Devin Desktop làm coding Agent.
 - Hard / architecture / core / complex debugging / large refactor / high blast radius → **Devin CLI**
-- Medium implementation / API / UI / modules / integration → **Cline CLI**
-- Light work / boilerplate / unit tests / docs / lint / typecheck → **OpenCode CLI**
+- Medium implementation / API / UI / modules / integration → **Devin CLI**
+- Light work / boilerplate / unit tests / docs / lint / typecheck → **Devin CLI**
 - Orchestration / architecture decision / verification / integration / git / final verdict → **Hermes**
 
 Không giao Agent mạnh cho việc nhẹ nếu Agent đơn giản hơn có thể hoàn thành với chất lượng tương đương.
@@ -203,10 +203,10 @@ Không tạo abstraction mới nếu abstraction hiện có đã giải quyết 
 ## Hermes configuration
 
 **Tags:**  
-`orchestration, delegation, multi-agent, devin-cli, cline, opencode, verification, integration, code-review, codemap, learning`
+`orchestration, delegation, multi-agent, devin-cli, verification, integration, code-review, codemap, learning`  
 
 **Related skills:**  
-`devin-cli, cline-cli, opencode, hermes-codemap, code-review-graph, hermes-web-search-stack, hermes-self-upgrade`
+`devin-cli, hermes-codemap, code-review-graph, hermes-web-search-stack, hermes-self-upgrade`
 
 ## Definition of DONE
 

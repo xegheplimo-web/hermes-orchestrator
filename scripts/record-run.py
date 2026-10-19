@@ -12,7 +12,7 @@ REQUIRED = [
     "run_id", "task_id", "agent", "model", "task_type", "duration_s",
     "exit_code", "provider_failure", "verify_status", "retry_index", "verified_by",
 ]
-AGENTS = {"cline", "opencode", "devin", "hermes"}
+AGENTS = {"devin", "hermes"}
 VERIFY_STATUSES = {"PASS", "FAIL", "PENDING", "UNVERIFIED"}
 
 
