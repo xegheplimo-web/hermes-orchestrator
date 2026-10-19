@@ -30,6 +30,7 @@ pure stdlib and cross-platform.
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import subprocess
 import sys
@@ -39,21 +40,47 @@ LINE_SUFFIX = re.compile(r":\d+(?:-\d+)?$")
 TRAIL = ".,;:)]}>`'\""
 EXT_RE = re.compile(r"\.[A-Za-z0-9]*[A-Za-z][A-Za-z0-9]{0,7}$")
 BRACKET_REF = re.compile(r"\[\w+:\s*([^\]\n]+)\]")
-BARE_PATH = re.compile(r"(?<![\w`:/\\-])([A-Za-z0-9_][\w.\-]*(?:[/\\][\w.\-]+)+)")
+BARE_PATH = re.compile(r"(?<![\w`:/\\.\-%$])([A-Za-z0-9_][\w.\-]*(?:[/\\][\w.\-]+)+)")
 BACKTICK = re.compile(r"`([^`\n]+)`")
+DOMAIN_RE = re.compile(r"^[A-Za-z0-9][\w.-]*\.[A-Za-z]{2,}$")
 
 
 def normalize(tok: str) -> str:
-    t = tok.strip().strip(TRAIL).strip()
+    t = tok.strip()
     t = LINE_SUFFIX.sub("", t)
-    t = t.strip(TRAIL).strip()
+    t = t.rstrip(TRAIL).strip()
     return t.replace("\\", "/")
 
 
 def skip_token(t: str, skips: list[re.Pattern]) -> bool:
-    if any(ch in t for ch in "<>{}%*") or " " in t:
+    if any(ch in t for ch in "<>{}*") or " " in t:
         return True
     return any(s.search(t) for s in skips)
+
+
+def is_url_candidate(t: str) -> bool:
+    if "://" in t or t.lower().startswith(("http", "www.", "mailto")):
+        return True
+    first = t.split("/")[0]
+    return "." in first and bool(DOMAIN_RE.match(first))
+
+
+def classify_ref(t: str, skips: list[re.Pattern]):
+    if not t or " " in t:
+        return None
+    if any(s.search(t) for s in skips):
+        return None
+    if any(ch in t for ch in "<>{}*"):
+        return None
+    if is_url_candidate(t):
+        return ("url", t)
+    if "%" in t:
+        return ("env", t)
+    if not EXT_RE.search(t):
+        return None
+    if "/" not in t:
+        return None
+    return ("path", t)
 
 
 def collect_refs(text: str) -> set[str]:
@@ -104,11 +131,44 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.mode in ("refs", "both"):
         refs = sorted({normalize(c) for c in collect_refs(text)})
-        refs = [r for r in refs if is_pathish(r) and not skip_token(r, skips)]
-        missing = [r for r in refs if not any((root / r).exists() for root in roots)]
-        print(f"== refs: checked={len(refs)} missing={len(missing)}")
+        # drop bare-path substrings that are actually parts of an env path or URL
+        url_cands = [r for r in refs if is_url_candidate(r)]
+        env_cands = [r for r in refs if "%" in r]
+        filtered = []
+        for r in refs:
+            if r not in url_cands and "%" not in r:
+                if any(r != u and r in u for u in url_cands):
+                    continue
+                if any(r != e and r in e for e in env_cands):
+                    continue
+            filtered.append(r)
+        refs = filtered
+        checked_refs = []
+        missing = []
+        env_unresolved = []
+        for r in refs:
+            cls = classify_ref(r, skips)
+            if cls is None:
+                continue
+            kind, val = cls
+            if kind == "url":
+                continue
+            checked_refs.append(val)
+            if kind == "env":
+                resolved = os.path.expandvars(val)
+                if "%" in resolved:
+                    env_unresolved.append(val)
+                    continue
+                if not Path(resolved).exists():
+                    missing.append(val)
+            else:
+                if not any((root / val).exists() for root in roots):
+                    missing.append(val)
+        print(f"== refs: checked={len(checked_refs)} missing={len(missing)} env_unresolved={len(env_unresolved)}")
         for m in missing[: args.limit]:
             print(f"   MISSING: {m}")
+        for u in env_unresolved[: args.limit]:
+            print(f"   ENV_UNRESOLVED: {u}")
         if missing:
             rc = 1
 
@@ -121,7 +181,8 @@ def main(argv: list[str] | None = None) -> int:
             found = False
             for root in roots:
                 out = subprocess.run(
-                    ["grep", "-rl", "-F", "-e", t, str(root)],
+                    ["grep", "-rl", "-F", "-e", t, "--exclude=*.md",
+                     "--exclude=" + doc.name, str(root)],
                     capture_output=True, text=True,
                 )
                 if out.stdout.strip():

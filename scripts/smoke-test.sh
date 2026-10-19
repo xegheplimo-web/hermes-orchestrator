@@ -191,6 +191,81 @@ case "$OUT1" in *"$WT3/_logs/"*) ok "dry-run log path in _logs" ;; *) bad "dry-r
 case "$OUT1" in *"$WT3/T-101/agent_logs"*) bad "dry-run log must not be in worktree agent_logs" ;; *) ok "dry-run log not in worktree" ;; esac
 if [ "$OUT1" != "$OUT2" ]; then ok "two dry-runs produce distinct output"; else bad "two dry-runs produce distinct output"; fi
 
+
+echo "== 9. verify-doc-refs correctness =="
+VDR_SCRIPT="$HERE/verify-doc-refs.py"
+VDRDIR="$(mktemp -d)"
+if command -v cygpath >/dev/null 2>&1; then
+  VDR_SCRIPT_W="$(cygpath -m "$VDR_SCRIPT")"
+  VDRDIR_W="$(cygpath -m "$VDRDIR")"
+else
+  VDR_SCRIPT_W="$VDR_SCRIPT"
+  VDRDIR_W="$VDRDIR"
+fi
+mkdir -p "$VDRDIR/src" "$VDRDIR/scripts"
+printf -- '--real-flag here
+' > "$VDRDIR/src/real.sh"
+printf 'envfile
+' > "$VDRDIR/env-exists.txt"
+export VDR_TMP="$VDRDIR_W"
+
+# (a) fake flag only in doc -> FAIL
+printf '%s
+' 'Flag: `--fake-flag-987`' > "$VDRDIR/doc-a.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_A_W="$(cygpath -m "$VDRDIR/doc-a.md")"; else DOC_A_W="$VDRDIR/doc-a.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_A_W" --root "$VDRDIR_W" --mode tokens 2>&1)"; RC=$?
+if [ "$RC" -ne 0 ]; then ok "verify-doc-refs: (a) fake flag only in doc -> FAIL"; else bad "verify-doc-refs: (a) fake flag only in doc -> FAIL (rc=$RC)"; fi
+case "$OUT" in *"MISSING: --fake-flag-987"*) ok "verify-doc-refs: (a) reports MISSING --fake-flag-987" ;; *) bad "verify-doc-refs: (a) missing marker"; echo "$OUT" | tail -3 ;; esac
+
+# (g) source really contains flag -> PASS
+printf '%s
+' 'Flag: `--real-flag`' > "$VDRDIR/doc-g.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_G_W="$(cygpath -m "$VDRDIR/doc-g.md")"; else DOC_G_W="$VDRDIR/doc-g.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_G_W" --root "$VDRDIR_W" --mode tokens 2>&1)"; RC=$?
+if [ "$RC" -eq 0 ]; then ok "verify-doc-refs: (g) source contains flag -> PASS"; else bad "verify-doc-refs: (g) source contains flag -> PASS (rc=$RC)"; echo "$OUT" | tail -3; fi
+
+# (d)+(f) existing path + :line / :start-end suffix -> PASS
+printf '%s
+' 'Path `src/real.sh` and `src/real.sh:10` and `src/real.sh:1-5`' > "$VDRDIR/doc-d.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_D_W="$(cygpath -m "$VDRDIR/doc-d.md")"; else DOC_D_W="$VDRDIR/doc-d.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_D_W" --root "$VDRDIR_W" --mode refs 2>&1)"; RC=$?
+if [ "$RC" -eq 0 ]; then ok "verify-doc-refs: (d) existing path -> PASS"; else bad "verify-doc-refs: (d) existing path -> PASS (rc=$RC)"; echo "$OUT" | tail -3; fi
+
+# (e) non-existent path -> FAIL
+printf '%s
+' 'Path `scripts/khong-ton-tai-xyz.sh`' > "$VDRDIR/doc-e.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_E_W="$(cygpath -m "$VDRDIR/doc-e.md")"; else DOC_E_W="$VDRDIR/doc-e.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_E_W" --root "$VDRDIR_W" --mode refs 2>&1)"; RC=$?
+if [ "$RC" -ne 0 ]; then ok "verify-doc-refs: (e) missing path -> FAIL"; else bad "verify-doc-refs: (e) missing path -> FAIL (rc=$RC)"; fi
+case "$OUT" in *"MISSING: scripts/khong-ton-tai-xyz.sh"*) ok "verify-doc-refs: (e) reports MISSING" ;; *) bad "verify-doc-refs: (e) missing marker" ;; esac
+
+# URL -> not MISSING
+printf '%s
+' 'URL `https://devin.ai/install` and devin.ai/cli/setup.ps1' > "$VDRDIR/doc-u.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_U_W="$(cygpath -m "$VDRDIR/doc-u.md")"; else DOC_U_W="$VDRDIR/doc-u.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_U_W" --root "$VDRDIR_W" --mode refs 2>&1)"; RC=$?
+if [ "$RC" -eq 0 ]; then ok "verify-doc-refs: URL doc -> exit 0"; else bad "verify-doc-refs: URL doc -> exit 0 (rc=$RC)"; echo "$OUT" | tail -3; fi
+case "$OUT" in *"MISSING: https://devin.ai/install"*|*"MISSING: devin.ai/cli/setup.ps1"*) bad "verify-doc-refs: URL falsely MISSING" ;; *) ok "verify-doc-refs: URL not reported MISSING" ;; esac
+
+# env path exists -> not MISSING
+printf '%s
+' 'Env `%VDR_TMP%/env-exists.txt`' > "$VDRDIR/doc-v.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_V_W="$(cygpath -m "$VDRDIR/doc-v.md")"; else DOC_V_W="$VDRDIR/doc-v.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_V_W" --root "$VDRDIR_W" --mode refs 2>&1)"; RC=$?
+if [ "$RC" -eq 0 ]; then ok "verify-doc-refs: env-existing doc -> exit 0"; else bad "verify-doc-refs: env-existing doc -> exit 0 (rc=$RC)"; echo "$OUT" | tail -3; fi
+case "$OUT" in *"MISSING: "*VDR_TMP*) bad "verify-doc-refs: env path falsely MISSING" ;; *) ok "verify-doc-refs: env path not MISSING" ;; esac
+
+# env path unresolved -> ENV_UNRESOLVED, not MISSING
+printf '%s
+' 'Env `%VDR_TMP_UNSET%/nope.txt`' > "$VDRDIR/doc-w.md"
+if command -v cygpath >/dev/null 2>&1; then DOC_W_W="$(cygpath -m "$VDRDIR/doc-w.md")"; else DOC_W_W="$VDRDIR/doc-w.md"; fi
+OUT="$("$PYBIN" "$VDR_SCRIPT_W" "$DOC_W_W" --root "$VDRDIR_W" --mode refs 2>&1)"; RC=$?
+case "$OUT" in *"ENV_UNRESOLVED: "*VDR_TMP_UNSET*) ok "verify-doc-refs: unresolved env -> ENV_UNRESOLVED" ;; *) bad "verify-doc-refs: unresolved env marker missing"; echo "$OUT" | tail -3 ;; esac
+case "$OUT" in *"MISSING: "*VDR_TMP_UNSET*) bad "verify-doc-refs: unresolved env falsely MISSING" ;; *) ok "verify-doc-refs: unresolved env not MISSING" ;; esac
+
+rm -rf "$VDRDIR"
+unset VDR_TMP
+
 echo
 if [ "$FAIL" -eq 0 ]; then
   echo "SMOKE: ALL GREEN — $PASS passed, 0 failed"
