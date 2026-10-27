@@ -46,7 +46,7 @@ Short path:
 ```bash
 curl -fsSL https://cli.devin.ai/install.sh | bash    # Devin CLI installer
 git clone https://github.com/xegheplimo-web/hermes-orchestrator E:/hermes-orchestrator
-bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 72 passed / 0 failed
+bash E:/hermes-orchestrator/scripts/smoke-test.sh     # expect: 84 passed / 0 failed
 ```
 
 ## Quickstart — orchestrate a project

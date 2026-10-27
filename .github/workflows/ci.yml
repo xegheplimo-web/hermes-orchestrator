@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Lint shell scripts
+        run: |
+          # Fail on errors only; style notes are informational
+          shellcheck --severity=error scripts/*.sh scripts/agent-hooks/*.sh
+
+      - name: Smoke test
+        run: |
+          bash scripts/smoke-test.sh

@@ -39,7 +39,7 @@ printf '{"tasks": []}\n' > "$P/.orchestrator/TASKS.json"
 printf '# r1\n- [ ] todo\n' > "$P/analysis/r1-interfaces.md"
 
 # Commit 1 @ 2026-09-01 (everything); commit 2 @ 2026-10-01 (README + state only)
-cd "$P"
+cd "$P" || exit
 git init -q
 git config user.email smoke@test.local && git config user.name Smoke
 git add -A
@@ -50,12 +50,16 @@ printf '\nmore\n' >> .orchestrator/PROJECT_STATE.md
 git add -A
 GIT_AUTHOR_DATE="2026-10-01T10:00:00+07:00" GIT_COMMITTER_DATE="2026-10-01T10:00:00+07:00" \
   git commit -qm c2
-cd - >/dev/null
+cd - >/dev/null || exit
 
 ROOT="$(conv "$P")"
 
 OUT="$("$PYBIN" "$SCRIPT" "$ROOT" --stale-days 14 2>&1)"; RC=$?
-[ "$RC" -eq 0 ] && ok "runs exit 0" || bad "runs exit 0 (rc=$RC)"
+if [ "$RC" -eq 0 ]; then
+  ok "runs exit 0"
+else
+  bad "runs exit 0 (rc=$RC)"
+fi
 case "$OUT" in *"docs/arch.md"*) ok "inventory lists docs/arch.md" ;; *) bad "inventory lists docs/arch.md" ;; esac
 case "$OUT" in *"stale"*) ok "stale flag present in output" ;; *) bad "stale flag present in output" ;; esac
 case "$OUT" in *"Roadmaps / checklists"*) ok "roadmap section rendered" ;; *) bad "roadmap section rendered" ;; esac
@@ -78,7 +82,11 @@ assert d["totals"]["docs"] >= 5 and d["totals"]["warnings"] >= 1, d["totals"]
 ' >/dev/null 2>&1; then ok "json contract asserts"; else bad "json contract asserts"; fi
 
 "$PYBIN" "$SCRIPT" "$ROOT" --stale-days 14 --strict >/dev/null 2>&1
-[ $? -eq 1 ] && ok "--strict exits 1 with warnings" || bad "--strict exits 1 with warnings"
+if [ $? -eq 1 ]; then
+  ok "--strict exits 1 with warnings"
+else
+  bad "--strict exits 1 with warnings"
+fi
 
 "$PYBIN" "$SCRIPT" "$ROOT" --stale-days 14 --json --out "$OUTDIR/out.json" --quiet >/dev/null 2>&1
 if "$PYBIN" -c 'import json,sys; json.load(open(sys.argv[1], encoding="utf-8"))' "$OUTDIR/out.json" >/dev/null 2>&1; then
@@ -93,13 +101,13 @@ fi
 # Fresh fixture: single commit, nothing lags HEAD -> --strict must exit 0
 P2="$SMOKE/fresh"; mkdir -p "$P2/docs"
 printf '# a\n' > "$P2/README.md"; printf '# b\n' > "$P2/docs/x.md"
-cd "$P2"
+cd "$P2" || exit
 git init -q
 git config user.email smoke@test.local && git config user.name Smoke
 git add -A
 GIT_AUTHOR_DATE="2026-10-01T10:00:00+07:00" GIT_COMMITTER_DATE="2026-10-01T10:00:00+07:00" \
   git commit -qm c1
-cd - >/dev/null
+cd - >/dev/null || exit
 "$PYBIN" "$SCRIPT" "$(conv "$P2")" --strict >/dev/null 2>&1
 [ $? -eq 0 ] && ok "fresh project --strict exits 0" || bad "fresh project --strict exits 0"
 

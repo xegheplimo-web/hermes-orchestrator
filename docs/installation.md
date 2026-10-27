@@ -169,7 +169,7 @@ hermes plugins doctor superpowers                              # expect: import 
 ```bash
 git clone https://github.com/xegheplimo-web/hermes-orchestrator E:/hermes-orchestrator
 cd E:/hermes-orchestrator && bash scripts/smoke-test.sh
-# expected: SMOKE: ALL GREEN — 72 passed, 0 failed
+# expected: SMOKE: ALL GREEN — 84 passed, 0 failed
 ```
 
 The smoke test boots a throwaway project in a temp dir and asserts every script contract
@@ -224,7 +224,7 @@ the composed command. Operational rules learned live (details: `docs/agent-matri
 | 2 | Devin health | `devin doctor` | 2 passed, 0 failures |
 | 3 | Hook registered | `hermes hooks doctor` | all checks green |
 | 4 | Hook behavior | `bash scripts/agent-hooks/test-guard.sh` | 19 pass / 0 fail |
-| 5 | Kit scripts | `bash scripts/smoke-test.sh` | 72 passed / 0 failed |
+| 5 | Kit scripts | `bash scripts/smoke-test.sh` | 84 passed / 0 failed |
 | 6 | Launch dry-run (devin) | `bash scripts/launch-agent.sh devin <workdir> <prompt> --dry-run` | prints canonical devin command, no side effects |
 | 7 | Launch rejects cline | `bash scripts/launch-agent.sh cline <workdir> <prompt> --dry-run` | exit 2, mentions D-015 |
 | 8 | Launch rejects opencode | `bash scripts/launch-agent.sh opencode <workdir> <prompt> --dry-run` | exit 2, mentions D-015 |
@@ -253,7 +253,7 @@ the composed command. Operational rules learned live (details: `docs/agent-matri
 | devin (CLI) | 3000.11.3 `9c803229faa4` (`%LOCALAPPDATA%\devin\cli\bin\devin.exe`) |
 | cline / opencode | retained on disk for non-coding CLI tasks (D-015) |
 | node / npm | v26.7.0 / 11.19.0 (Node bundled with Hermes) |
-| kit smoke test | 72 passed / 0 failed |
+| kit smoke test | 84 passed / 0 failed |
 | guard hook | kit mirror **identical** to live; 19/19 synthetic tests; re-approved 2026-10-07 after the read-only-query refinement |
 | `hermes hooks doctor` | healthy — exists · allowlisted · unchanged · runs clean |
 | superpowers plugin | 6.4.2 (`hermes plugins`; skills namespaced `superpowers:*`; up to date) |
