@@ -26,7 +26,7 @@
 - 2026-10-11 — **T-116** Post-Run Learning Loop (D-010): `docs/post-run-learning-loop.md` (spec giữ nguyên + Kit mapping; xoá file drop ở root) · `lead-orchestrator` **v1.6.0** (§22 rewrite — Q×S invariant · admission gate · mechanism ladder · Q/S classification; §23 cross-ref) · lessons: memory-`replace` = whole-entry → `hermes-self-upgrade`; pitfall doc-drop-in-repo → `capability-adoption`; loop pointer → `multi-agent-orchestration` · ref hygiene archived-skill: đã sạch (session song song 46811d sửa local-place-scan/embedded — khớp kế hoạch, không stack) · gates re-run green (see `VERIFICATION.md`).
 
 ## In progress
-- none
+- T-102 + T-103 dispatched to Devin CLI (D-015 lane) — CI workflow + secret-scan pre-commit hook for public-repo safety.
 
 ## Next up (backlog — see TASKS.json)
 - T-101 status renderer (`TASKS.json` → compact board, python stdlib).

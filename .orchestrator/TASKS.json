@@ -469,22 +469,22 @@
     {
       "id": "T-101",
       "title": "status renderer: TASKS.json -> compact board (python, stdout only)",
-      "suggested_agent": "opencode"
+      "suggested_agent": "devin"
     },
     {
       "id": "T-102",
       "title": "secret-scan pre-commit hook",
-      "suggested_agent": "opencode"
+      "suggested_agent": "devin"
     },
     {
       "id": "T-103",
       "title": "CI workflow: shellcheck + smoke-test on push",
-      "suggested_agent": "cline"
+      "suggested_agent": "devin"
     },
     {
       "id": "T-108",
       "title": "round ledger: auto-append rows from agent_logs/*_result.json to the verification doc",
-      "suggested_agent": "opencode"
+      "suggested_agent": "devin"
     }
   ]
 }
